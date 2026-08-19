@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kassenabschluss · HB digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --bg:#E9EDF3;
+    --surface:#FFFFFF;
+    --surface-2:#F5F7FB;
+    --brand:#0FA37F;
+    --brand-deep:#0B7C60;
+    --muted:#63728C;
+    --faint:#94A2B8;
+    --line:#DBE2EC;
+    --line-strong:#C4CEDC;
+    --plus:#B8860B;
+    --minus:#D64B47;
+    --ok:#0FA37F;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(11,18,32,.04), 0 8px 28px -12px rgba(11,18,32,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 82% -8%, rgba(15,163,127,.10), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.45;
+    padding:22px 18px 60px;
+    min-height:100vh;
+  }
+  .wrap{max-width:1080px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:18px;flex-wrap:wrap;margin-bottom:18px;padding:0 4px;
+  }
+  .brand{display:flex;align-items:center;gap:11px;}
+  .logo{
+    width:40px;height:40px;border-radius:11px;flex:none;
+    background:linear-gradient(150deg,var(--brand),var(--brand-deep));
+    display:grid;place-items:center;color:#fff;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35), var(--shadow);
+    letter-spacing:-.5px;
+  }
+  .brand h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:19px;margin:0;letter-spacing:-.3px;
+  }
+  .brand h1 span{color:var(--brand);}
+  .brand small{display:block;color:var(--muted);font-size:11.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;margin-top:1px;}
+  .clock{
+    text-align:right;font-family:'Space Mono',monospace;color:var(--muted);
+    font-size:12.5px;line-height:1.5;
+  }
+  .clock b{display:block;color:var(--ink);font-size:15px;font-weight:700;}
+
+  /* ---------- Meta strip ---------- */
+  .meta{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);
+  }
+  .meta .cell{background:var(--surface);padding:11px 14px;}
+  .meta label{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:3px;}
+  .meta input{
+    width:100%;border:none;background:transparent;font-family:'Inter',sans-serif;
+    font-size:15px;font-weight:600;color:var(--ink);padding:0;outline:none;
+  }
+  .meta input::placeholder{color:#B9C4D3;font-weight:500;}
+
+  /* ---------- Grid ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+  @media(max-width:900px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+  }
+  .card > .head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:15px 18px 13px;border-bottom:1px solid var(--line);
+  }
+  .card > .head h2{
+    font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;
+    margin:0;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;
+  }
+  .card > .head .idx{
+    width:22px;height:22px;border-radius:7px;background:var(--surface-2);
+    border:1px solid var(--line);display:grid;place-items:center;
+    font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--brand);
+  }
+  .card > .head .hint{font-size:11.5px;color:var(--faint);font-weight:500;}
+
+  .body{padding:8px 18px 16px;}
+
+  /* ---------- Denomination rows ---------- */
+  .group-label{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:14px 0 7px;
+  }
+  .group-label:first-child{margin-top:6px;}
+  .group-label .t{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .group-label .sub{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--faint);font-weight:700;}
+
+  .row{
+    display:grid;grid-template-columns:96px 1fr 96px;align-items:center;gap:10px;
+    padding:4px 0;
+  }
+  .chip{
+    position:relative;display:flex;align-items:center;padding:7px 10px 7px 15px;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:9px;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;
+    color:var(--ink);overflow:hidden;
+  }
+  .chip::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    background:var(--dc,#ccc);
+  }
+  .cnt{position:relative;}
+  .cnt input{
+    width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;
+    padding:8px 34px 8px 12px;font-family:'Space Mono',monospace;font-size:14px;
+    font-weight:700;color:var(--ink);text-align:right;outline:none;
+    transition:border-color .12s, box-shadow .12s;-moz-appearance:textfield;
+  }
+  .cnt input::-webkit-outer-spin-button,.cnt input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .cnt input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,163,127,.14);}
+  .cnt input.filled{background:#F0FBF7;border-color:#BFE7D9;}
+  .cnt .x{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--faint);font-family:'Space Mono',monospace;font-size:12px;pointer-events:none;}
+  .linesum{
+    font-family:'Space Mono',monospace;font-size:13.5px;font-weight:700;
+    text-align:right;color:var(--faint);letter-spacing:-.3px;
+  }
+  .linesum.on{color:var(--ink);}
+
+  .divider{height:1px;background:var(--line);margin:14px 0 4px;}
+
+  .total-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:16px;padding:14px 16px;border-radius:11px;
+    background:linear-gradient(180deg,#0E1A2C,#0B1524);color:#fff;
+  }
+  .total-row .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9DB0C6;font-weight:600;}
+  .total-row .lbl b{display:block;font-family:'Inter';font-size:14px;letter-spacing:0;text-transform:none;color:#fff;font-weight:600;margin-top:2px;}
+  .total-row .val{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;letter-spacing:-1px;}
+
+  /* ---------- Reconcile side ---------- */
+  .field{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:11px 0;border-bottom:1px dashed var(--line);
+  }
+  .field:last-of-type{border-bottom:none;}
+  .field .k{font-size:13.5px;color:var(--muted);font-weight:500;}
+  .field .k small{display:block;font-size:11px;color:var(--faint);margin-top:1px;}
+  .amount-in{
+    display:flex;align-items:center;background:#fff;border:1px solid var(--line);
+    border-radius:9px;padding:0 12px;transition:border-color .12s, box-shadow .12s;
+    max-width:150px;
+  }
+  .amount-in:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,163,127,.14);}
+  .amount-in input{
+    width:100%;border:none;outline:none;background:transparent;text-align:right;
+    font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);
+    padding:9px 0;min-width:60px;
+  }
+  .amount-in .cur{color:var(--faint);font-family:'Space Mono',monospace;font-size:14px;padding-left:6px;font-weight:700;}
+  .val-static{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);}
+
+  /* Kassenbuch list */
+  .kb-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px;}
+  .kb-head .t{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .kb-head .n{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);font-weight:700;}
+  .kb-list{display:flex;flex-direction:column;gap:7px;}
+  .kb-row{display:grid;grid-template-columns:20px 1fr 118px 28px;align-items:center;gap:8px;}
+  .kb-row .num{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);text-align:center;font-weight:700;}
+  .kb-row .desc{
+    border:1px solid var(--line);border-radius:8px;background:var(--surface-2);
+    padding:8px 11px;font-family:'Inter';font-size:13px;color:var(--ink);outline:none;
+    transition:border-color .12s, box-shadow .12s;
+  }
+  .kb-row .desc:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,163,127,.12);background:#fff;}
+  .kb-row .amount-in{max-width:none;}
+  .kb-row .del{
+    border:none;background:transparent;color:#C4CEDC;cursor:pointer;font-size:17px;
+    line-height:1;padding:6px;border-radius:7px;transition:.12s;
+  }
+  .kb-row .del:hover{color:var(--minus);background:#FCEDED;}
+  .add-btn{
+    margin-top:11px;width:100%;border:1px dashed var(--line-strong);background:var(--surface-2);
+    border-radius:10px;padding:10px;font-family:'Inter';font-size:13px;font-weight:600;
+    color:var(--brand-deep);cursor:pointer;transition:.12s;display:flex;align-items:center;
+    justify-content:center;gap:7px;
+  }
+  .add-btn:hover{background:#EEFAF5;border-color:var(--brand);}
+
+  .soll-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+  }
+  .soll-row .lbl{font-size:13.5px;font-weight:600;color:var(--ink);}
+  .soll-row .val{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;letter-spacing:-.5px;}
+
+  /* Differenz verdict */
+  .verdict{
+    margin-top:16px;border-radius:12px;padding:18px;position:relative;overflow:hidden;
+    border:1px solid var(--vline,var(--line));background:var(--vbg,var(--surface-2));
+    transition:background .18s, border-color .18s;
+  }
+  .verdict .row1{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .verdict .status{
+    display:inline-flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:15px;color:var(--vcol,var(--ink));
+  }
+  .verdict .dot{width:11px;height:11px;border-radius:50%;background:var(--vcol,var(--muted));flex:none;box-shadow:0 0 0 4px var(--vhalo,transparent);}
+  .verdict .big{
+    font-family:'Space Mono',monospace;font-weight:700;font-size:30px;
+    color:var(--vcol,var(--ink));letter-spacing:-1.5px;line-height:1;
+  }
+  .verdict .expl{
+    margin-top:13px;padding-top:12px;border-top:1px solid var(--vline,var(--line));
+    font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);
+    line-height:1.7;word-spacing:1px;
+  }
+  .verdict .expl b{color:var(--ink);}
+
+  /* ---------- Actions ---------- */
+  .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+  button.act{
+    border:1px solid var(--line-strong);background:var(--surface);border-radius:10px;
+    padding:11px 18px;font-family:'Inter';font-size:13.5px;font-weight:600;color:var(--ink);
+    cursor:pointer;transition:.12s;display:inline-flex;align-items:center;gap:8px;
+  }
+  button.act:hover{background:var(--surface-2);border-color:var(--faint);}
+  button.act.primary{background:linear-gradient(150deg,var(--brand),var(--brand-deep));color:#fff;border-color:transparent;box-shadow:var(--shadow);}
+  button.act.primary:hover{filter:brightness(1.05);}
+
+  footer.foot{text-align:center;color:var(--faint);font-size:11.5px;margin-top:26px;line-height:1.6;}
+  footer.foot b{color:var(--muted);font-weight:600;}
+
+  /* ---------- Print ---------- */
+  @media print{
+    body{background:#fff;padding:0;color:#000;}
+    .actions,.add-btn,.kb-row .del,.clock{display:none!important;}
+    .card,.meta{box-shadow:none;border-color:#bbb;}
+    .verdict{break-inside:avoid;}
+    .cnt input,.amount-in,.kb-row .desc{border-color:#ccc!important;box-shadow:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">HB</div>
+      <div>
+        <h1>HB<span>·</span>digital</h1>
+        <small>Kassenabschluss</small>
+      </div>
+    </div>
+    <div class="clock">
+      <b id="clk-time">--:--</b>
+      <span id="clk-date">—</span>
+    </div>
+  </header>
+
+  <div class="meta">
+    <div class="cell">
+      <label>Kasse-Nr.</label>
+      <input id="m-kasse" placeholder="z. B. 01" />
+    </div>
+    <div class="cell">
+      <label>Kassierer/in</label>
+      <input id="m-name" placeholder="Name" />
+    </div>
+    <div class="cell">
+      <label>Schicht / Notiz</label>
+      <input id="m-note" placeholder="z. B. Spätschicht" />
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ========== LEFT: Geldzählung ========== -->
+    <section class="card">
+      <div class="head">
+        <h2><span class="idx">1</span>Geldzählung</h2>
+        <span class="hint">Menge je Nominal eingeben</span>
+      </div>
+      <div class="body">
+        <div class="group-label">
+          <span class="t">Scheine</span>
+          <span class="sub" id="sub-scheine">0,00 €</span>
+        </div>
+        <div id="scheine"></div>
+
+        <div class="group-label">
+          <span class="t">Münzen</span>
+          <span class="sub" id="sub-muenzen">0,00 €</span>
+        </div>
+        <div id="muenzen"></div>
+
+        <div class="total-row">
+          <div class="lbl">Ist-Bestand<b>Gezähltes Bargeld</b></div>
+          <div class="val" id="ist-total">0,00&nbsp;€</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== RIGHT: Abgleich ========== -->
+    <section class="card">
+      <div class="head">
+        <h2><span class="idx">2</span>Abgleich</h2>
+        <span class="hint">Ist gegen Soll prüfen</span>
+      </div>
+      <div class="body">
+
+        <div class="field">
+          <div class="k">Anfangsbestand<small>Wechselgeld zu Schichtbeginn</small></div>
+          <div class="amount-in">
+            <input id="in-anfang" inputmode="decimal" placeholder="0,00" />
+            <span class="cur">€</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="k">Bareinnahme<small>Ist-Bestand − Anfangsbestand</small></div>
+          <div class="val-static" id="out-einnahme">0,00 €</div>
+        </div>
+
+        <!-- Kassenbuch manual calculator -->
+        <div class="kb-head">
+          <span class="t">Kassenbuch — Bestellungen</span>
+          <span class="n" id="kb-count">0 Positionen</span>
+        </div>
+        <div class="kb-list" id="kb-list"></div>
+        <button class="add-btn" id="kb-add">＋ Position hinzufügen</button>
+
+        <div class="soll-row">
+          <span class="lbl">Soll-Umsatz (laut Buch)</span>
+          <span class="val" id="soll-total">0,00 €</span>
+        </div>
+
+        <!-- Verdict -->
+        <div class="verdict" id="verdict">
+          <div class="row1">
+            <span class="status"><span class="dot"></span><span id="v-status">Noch keine Eingabe</span></span>
+            <span class="big" id="v-amount">0,00 €</span>
+          </div>
+          <div class="expl" id="v-expl"></div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <div class="actions">
+    <button class="act" id="btn-reset">↺ Zurücksetzen</button>
+    <button class="act primary" id="btn-print">⎙ Abschluss drucken</button>
+  </div>
+
+  <footer class="foot">
+    <b>Ist</b> = gezähltes Bargeld · <b>Bareinnahme</b> = Ist − Anfangsbestand · <b>Differenz</b> = Bareinnahme − Soll-Umsatz<br>
+    HB·digital Kassenrechner — alle Angaben in Euro.
+  </footer>
+</div>
+
+<script>
+  const eur = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+  const fmt = c => eur.format(c/100);
+
+  // Real euro-note / coin colours for the accent bar
+  const SCHEINE = [
+    {c:50000, col:'#8266A8'}, {c:20000, col:'#C4A02A'}, {c:10000, col:'#4C9A5C'},
+    {c:5000,  col:'#E39A2E'}, {c:2000,  col:'#2E6FB5'}, {c:1000,  col:'#C0453B'},
+    {c:500,   col:'#8A8F98'}
+  ];
+  const MUENZEN = [
+    {c:200, col:'#C9A24B'}, {c:100, col:'#C9A24B'}, {c:50, col:'#C69A3A'},
+    {c:20,  col:'#C69A3A'}, {c:10,  col:'#C69A3A'}, {c:5,  col:'#B06A3B'},
+    {c:2,   col:'#B06A3B'}, {c:1,   col:'#B06A3B'}
+  ];
+
+  function denomLabel(c){
+    if(c >= 100 && c % 100 === 0) return (c/100) + ' €';
+    return eur.format(c/100); // 0,50 € etc.
+  }
+
+  function buildRows(container, list){
+    list.forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML =
+        `<div class="chip" style="--dc:${d.col}">${denomLabel(d.c)}</div>
+         <div class="cnt"><input type="number" min="0" step="1" value="" data-cents="${d.c}" placeholder="0"><span class="x">×</span></div>
+         <div class="linesum" data-sum="${d.c}">0,00 €</div>`;
+      container.appendChild(row);
+    });
+  }
+  buildRows(document.getElementById('scheine'), SCHEINE);
+  buildRows(document.getElementById('muenzen'), MUENZEN);
+
+  // ---- parse German/EN amount string to cents ----
+  function toCents(str){
+    if(str == null) return 0;
+    str = String(str).trim().replace(/\s/g,'').replace(/€/g,'');
+    if(!str) return 0;
+    if(str.includes(',') && str.includes('.')) str = str.replace(/\./g,'').replace(',','.');
+    else if(str.includes(',')) str = str.replace(',','.');
+    const n = parseFloat(str);
+    return isNaN(n) ? 0 : Math.round(n*100);
+  }
+
+  // ---- Kassenbuch rows ----
+  const kbList = document.getElementById('kb-list');
+  function addKbRow(desc='', amount=''){
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    row.innerHTML =
+      `<span class="num"></span>
+       <input class="desc" placeholder="Beleg / Bestellung" value="${desc}">
+       <div class="amount-in"><input class="kb-amt" inputmode="decimal" placeholder="0,00" value="${amount}"><span class="cur">€</span></div>
+       <button class="del" title="Entfernen">×</button>`;
+    kbList.appendChild(row);
+    row.querySelector('.del').addEventListener('click', ()=>{ row.remove(); renumberKb(); recompute(); });
+    row.querySelector('.kb-amt').addEventListener('input', recompute);
+    row.querySelector('.kb-amt').addEventListener('keydown', e=>{
+      if(e.key === 'Enter'){ e.preventDefault(); addKbRow(); recompute(); kbList.lastElementChild.querySelector('.desc').focus(); }
+    });
+    renumberKb();
+  }
+  function renumberKb(){
+    [...kbList.children].forEach((r,i)=> r.querySelector('.num').textContent = i+1);
+    const n = kbList.children.length;
+    document.getElementById('kb-count').textContent = n + (n===1 ? ' Position' : ' Positionen');
+  }
+  document.getElementById('kb-add').addEventListener('click', ()=>{ addKbRow(); recompute(); });
+  // seed with three empty rows
+  addKbRow(); addKbRow(); addKbRow();
+
+  // ---- main recompute ----
+  function recompute(){
+    // count cash
+    let scheineC = 0, muenzenC = 0;
+    document.querySelectorAll('#scheine .cnt input').forEach(inp=>{
+      const q = Math.max(0, parseInt(inp.value)||0);
+      const cents = q * parseInt(inp.dataset.cents);
+      scheineC += cents;
+      inp.classList.toggle('filled', q>0);
+      const sumEl = inp.closest('.row').querySelector('.linesum');
+      sumEl.textContent = fmt(cents); sumEl.classList.toggle('on', q>0);
+    });
+    document.querySelectorAll('#muenzen .cnt input').forEach(inp=>{
+      const q = Math.max(0, parseInt(inp.value)||0);
+      const cents = q * parseInt(inp.dataset.cents);
+      muenzenC += cents;
+      inp.classList.toggle('filled', q>0);
+      const sumEl = inp.closest('.row').querySelector('.linesum');
+      sumEl.textContent = fmt(cents); sumEl.classList.toggle('on', q>0);
+    });
+    const istC = scheineC + muenzenC;
+    document.getElementById('sub-scheine').textContent = fmt(scheineC);
+    document.getElementById('sub-muenzen').textContent = fmt(muenzenC);
+    document.getElementById('ist-total').innerHTML = fmt(istC).replace(' ','&nbsp;');
+
+    // reconcile
+    const anfangC = toCents(document.getElementById('in-anfang').value);
+    const einnahmeC = istC - anfangC;
+    document.getElementById('out-einnahme').textContent = fmt(einnahmeC);
+
+    let sollC = 0;
+    document.querySelectorAll('.kb-amt').forEach(a=> sollC += toCents(a.value));
+    document.getElementById('soll-total').textContent = fmt(sollC);
+
+    const diffC = einnahmeC - sollC;
+    renderVerdict(diffC, istC, anfangC, einnahmeC, sollC);
+  }
+
+  function renderVerdict(diffC, istC, anfangC, einnahmeC, sollC){
+    const v = document.getElementById('verdict');
+    const st = document.getElementById('v-status');
+    const amt = document.getElementById('v-amount');
+    const expl = document.getElementById('v-expl');
+    const anyInput = istC>0 || sollC>0 || anfangC>0;
+
+    let col, bg, line, halo, label, sign='';
+    if(!anyInput){
+      col='#63728C'; bg='var(--surface-2)'; line='var(--line)'; halo='transparent';
+      label='Noch keine Eingabe';
+    } else if(diffC === 0){
+      col='#0FA37F'; bg='#F0FBF7'; line='#BFE7D9'; halo='rgba(15,163,127,.18)';
+      label='Kasse stimmt';
+    } else if(diffC > 0){
+      col='#B8860B'; bg='#FBF6E9'; line='#E9D9A8'; halo='rgba(184,134,11,.18)';
+      label='Überschuss (zu viel)'; sign='+';
+    } else {
+      col='#D64B47'; bg='#FCEEED'; line='#F1C9C7'; halo='rgba(214,75,71,.18)';
+      label='Fehlbetrag (zu wenig)'; sign='−';
+    }
+    v.style.setProperty('--vcol',col);
+    v.style.setProperty('--vbg',bg);
+    v.style.setProperty('--vline',line);
+    v.style.setProperty('--vhalo',halo);
+    st.textContent = label;
+    amt.textContent = (sign ? sign + ' ' : '') + fmt(Math.abs(diffC));
+    expl.innerHTML =
+      `Ist <b>${fmt(istC)}</b> − Anfang <b>${fmt(anfangC)}</b> = Einnahme <b>${fmt(einnahmeC)}</b><br>`+
+      `Einnahme <b>${fmt(einnahmeC)}</b> − Soll <b>${fmt(sollC)}</b> = <b>${(diffC>0?'+ ':diffC<0?'− ':'')}${fmt(Math.abs(diffC))}</b>`;
+  }
+
+  // listeners
+  document.querySelectorAll('.cnt input').forEach(i=> i.addEventListener('input', recompute));
+  document.getElementById('in-anfang').addEventListener('input', recompute);
+
+  // reset
+  document.getElementById('btn-reset').addEventListener('click', ()=>{
+    if(!confirm('Alle Eingaben zurücksetzen?')) return;
+    document.querySelectorAll('.cnt input').forEach(i=> i.value='');
+    document.getElementById('in-anfang').value='';
+    document.querySelectorAll('#m-kasse,#m-name,#m-note').forEach(i=> i.value='');
+    kbList.innerHTML=''; addKbRow(); addKbRow(); addKbRow();
+    recompute();
+  });
+
+  // print
+  document.getElementById('btn-print').addEventListener('click', ()=> window.print());
+
+  // clock
+  function tick(){
+    const d = new Date();
+    document.getElementById('clk-time').textContent =
+      d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('clk-date').textContent =
+      d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  tick(); setInterval(tick, 1000*30);
+
+  recompute();
+</script>
+</body>
+</html>

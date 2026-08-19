@@ -1,0 +1,67 @@
+<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .gear-fill { fill: #F08A1E; }
+      .gear-stroke { stroke: #0B5FA5; stroke-width: 1.5; fill: none; }
+      .text-main { font-family: 'Space Grotesk', 'Arial', sans-serif; font-size: 32px; font-weight: 700; fill: #0B5FA5; letter-spacing: -0.5px; }
+      .text-sub { font-family: 'Space Grotesk', 'Arial', sans-serif; font-size: 16px; font-weight: 600; fill: #0B5FA5; letter-spacing: 0.5px; }
+      .dot { fill: #F08A1E; }
+    </style>
+  </defs>
+
+  <!-- Шестеренка (Gear) -->
+  <g id="gear">
+    <!-- Внешний круг шестеренки -->
+    <circle cx="50" cy="60" r="38" class="gear-stroke" stroke-dasharray="none"/>
+    
+    <!-- Зубцы шестеренки (12 зубцов) -->
+    <g class="gear-fill">
+      <!-- Зубец 1 (вверх) -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(0 50 60)"/>
+      <!-- Зубец 2 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(30 50 60)"/>
+      <!-- Зубец 3 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(60 50 60)"/>
+      <!-- Зубец 4 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(90 50 60)"/>
+      <!-- Зубец 5 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(120 50 60)"/>
+      <!-- Зубец 6 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(150 50 60)"/>
+      <!-- Зубец 7 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(180 50 60)"/>
+      <!-- Зубец 8 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(210 50 60)"/>
+      <!-- Зубец 9 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(240 50 60)"/>
+      <!-- Зубец 10 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(270 50 60)"/>
+      <!-- Зубец 11 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(300 50 60)"/>
+      <!-- Зубец 12 -->
+      <rect x="46" y="16" width="8" height="12" rx="2" transform="rotate(330 50 60)"/>
+    </g>
+    
+    <!-- Внутренний круг -->
+    <circle cx="50" cy="60" r="18" fill="#F08A1E" opacity="0.15"/>
+    
+    <!-- Центр шестеренки -->
+    <circle cx="50" cy="60" r="8" fill="#0B5FA5"/>
+    <circle cx="50" cy="60" r="5" fill="#F08A1E"/>
+  </g>
+
+  <!-- Текст -->
+  <text x="105" y="75" class="text-main">ASC</text>
+  
+  <!-- Точка (акцент) -->
+  <circle cx="188" cy="78" r="3.5" class="dot"/>
+  
+  <!-- Текст PROD -->
+  <text x="198" y="75" class="text-sub">PROD</text>
+
+  <!-- Нижняя линия (акцент) -->
+  <line x1="105" y1="85" x2="340" y2="85" stroke="#0B5FA5" stroke-width="1.5" opacity="0.3"/>
+  
+  <!-- Под логотипом: полный текст компании (опционально, можно скрыть) -->
+  <text x="105" y="108" style="font-family: 'Arial', sans-serif; font-size: 10px; fill: #7B8A96; letter-spacing: 1px; text-transform: uppercase;">ANDREY SCHWINDT COMPANY</text>
+</svg>

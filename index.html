@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASC•Prod Калькуляторы</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 40px;
+    padding: 20px 0;
+  }
+  
+  header .brand {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  
+  header .brand span {
+    color: rgba(255,255,255,0.8);
+  }
+  
+  header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,.2);
+  }
+  
+  header p {
+    font-size: 1.1em;
+    opacity: 0.95;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+  }
+  
+  .card-icon {
+    font-size: 2.5em;
+    margin-bottom: 16px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .card h2 {
+    font-size: 1.5em;
+    margin-bottom: 12px;
+    color: #222;
+  }
+  
+  .card p {
+    font-size: 0.95em;
+    color: #666;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 20px;
+  }
+  
+  .card-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  
+  .card-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  .card-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 60px;
+    padding: 40px 20px;
+    background: rgba(255,255,255,.95);
+    border-radius: 16px;
+  }
+  
+  .feature {
+    padding: 20px;
+  }
+  
+  .feature h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #667eea;
+  }
+  
+  .feature p {
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  footer {
+    text-align: center;
+    color: rgba(255,255,255,.8);
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,.2);
+    font-size: 0.9em;
+  }
+  
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 2em;
+    }
+    
+    header p {
+      font-size: 1em;
+    }
+    
+    .grid {
+      gap: 16px;
+    }
+    
+    .card {
+      padding: 20px 16px;
+    }
+    
+    .card h2 {
+      font-size: 1.3em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 12px;
+    }
+    
+    header {
+      margin-bottom: 24px;
+      padding: 12px 0;
+    }
+    
+    header .brand {
+      font-size: 1.3em;
+    }
+    
+    header h1 {
+      font-size: 1.5em;
+      margin-bottom: 6px;
+    }
+    
+    header p {
+      font-size: 0.95em;
+    }
+    
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    
+    .card {
+      padding: 16px;
+    }
+    
+    .card-icon {
+      font-size: 2em;
+      margin-bottom: 12px;
+    }
+    
+    .card h2 {
+      font-size: 1.2em;
+    }
+    
+    .card p {
+      font-size: 0.9em;
+      margin-bottom: 16px;
+    }
+    
+    .features {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 24px 16px;
+      margin-top: 32px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">ASC<span>•</span>Prod</div>
+    <h1>📊 Калькуляторы</h1>
+    <p>Быстрые инструменты для расчётов — доступны везде</p>
+  </header>
+  
+  <div class="grid">
+    <!-- Калькулятор прибыли -->
+    <a href="gewinn.html" class="card">
+      <div class="card-icon">💰</div>
+      <h2>Калькулятор прибыли</h2>
+      <p>Считайте прибыль по артикулам, добавляйте НДС и рекламные расходы. Импорт из Excel, экспорт CSV и печатные отчёты.</p>
+      <button class="card-btn">Открыть →</button>
+    </a>
+    
+    <!-- Кассовый калькулятор -->
+    <a href="kasse.html" class="card">
+      <div class="card-icon">🏪</div>
+      <h2>Кассовый отчёт</h2>
+      <p>Пересчитайте кассу по номиналам, сверьте Ist/Soll, ведите кассовую книгу. Прямо в браузере, без регистрации.</p>
+      <button class="card-btn">Открыть →</button>
+    </a>
+    
+    <!-- Солярный калькулятор -->
+    <a href="solar.html" class="card">
+      <div class="card-icon">☀️</div>
+      <h2>Расчёт солнечного кабеля</h2>
+      <p>Выберите сечение кабеля (4 или 6 мм²) для балконной электростанции. Учитываются температура, длина и нагрузка.</p>
+      <button class="card-btn">Открыть →</button>
+    </a>
+    
+    <!-- Журнал физиотерапии -->
+    <a href="physio.html" class="card">
+      <div class="card-icon">🩺</div>
+      <h2>Журнал физиотерапии</h2>
+      <p>Ведение картотеки пациентов и истории лечения. Запись сеансов, результаты, анализ прогресса терапии.</p>
+      <button class="card-btn">Открыть →</button>
+    </a>
+  </div>
+  
+  <div class="features">
+    <div class="feature">
+      <h3>📱 Для всех устройств</h3>
+      <p>Работает на ПК, планшете и мобильнике. Адаптивный дизайн — комфортно везде.</p>
+    </div>
+    <div class="feature">
+      <h3>⚡ Мгновенно</h3>
+      <p>Никаких серверов и облаков. Всё считается локально, данные не уходят в интернет.</p>
+    </div>
+    <div class="feature">
+      <h3>💾 Экспорт и печать</h3>
+      <p>Сохраняйте результаты в CSV, печатайте отчёты или копируйте в буфер обмена.</p>
+    </div>
+  </div>
+  
+  <footer>
+    <p>ASC•Prod Инструменты · Откройте в новой вкладке для удобства · Работает оффлайн после загрузки</p>
+  </footer>
+</div>
+</body>
+</html>

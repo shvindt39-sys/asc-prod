@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solarkabel-Rechner Balkonkraftwerk · 4 oder 6 mm²</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#0B5FA5; --brand-dark:#08477C; --brand-soft:#EAF2F9; --accent:#F08A1E;
+  --ink:#1E2A33; --body:#4A5A66; --muted:#7B8A96; --line:#DFE5EA; --bg:#F4F7F9; --card:#FFF;
+  --ok:#2E8B57; --ok-soft:#EAF5EF; --warn:#C87F0A; --warn-soft:#FCF3E3; --bad:#C4392C; --bad-soft:#FBEDEB;
+  --r:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--body);font-family:'Space Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.6;padding:0 0 60px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+.topbar{background:var(--brand);color:#fff;font-size:12.5px}
+.topbar .wrap{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;padding:8px 20px}
+header{background:var(--card);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding-top:20px;padding-bottom:20px}
+.logo{font-size:24px;font-weight:700;color:var(--brand);letter-spacing:-0.5px}
+.logo i{font-style:normal;color:var(--accent)}
+.headline{font-size:19px;font-weight:600;color:var(--ink)}
+.headline span{display:block;font-size:12.5px;font-weight:400;color:var(--muted)}
+
+.scope{background:var(--warn-soft);border:1px solid #EBD7AE;border-left:4px solid var(--warn);color:#6B4805;border-radius:var(--r);padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:24px}
+.scope b{display:block;font-weight:600;margin-bottom:2px}
+.cable{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:var(--r);padding:18px 20px;margin-top:20px}
+.cable-head{font-size:13px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+.cable-spec{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px;margin:0}
+.cable-spec dt{color:var(--muted)}
+.cable-spec dd{text-align:right;font-weight:600;color:var(--ink);margin:0}
+.cable-foot{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);font-size:12.5px;color:var(--body);line-height:1.5}
+.cable-btn{display:block;margin-top:14px;background:var(--accent);color:#fff;text-align:center;text-decoration:none;padding:11px;border-radius:4px;font-size:14px;font-weight:600}
+.cable-btn:hover{background:#D97A12}
+.prod{display:flex;gap:14px;align-items:center;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:var(--r);text-decoration:none;background:var(--bg);transition:border-color .15s,box-shadow .15s}
+.prod:hover{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.prod-img{width:82px;height:82px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;flex:0 0 auto}
+.prod-body{min-width:0;flex:1}
+.prod-name{font-size:14px;font-weight:600;color:var(--ink);line-height:1.35}
+.prod-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+.prod-price{margin-top:6px;font-size:17px;font-weight:700;color:var(--ink)}
+.prod-price em{display:block;font-style:normal;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:1px}
+.prod-cta{margin-top:7px;font-size:13px;font-weight:600;color:var(--accent)}
+@media(max-width:420px){.prod{flex-direction:column;align-items:flex-start}}
+.gain{margin-top:20px;background:var(--ok-soft);border:1px solid #CFE6DA;border-left:4px solid var(--ok);border-radius:var(--r);padding:13px 16px;font-size:13px;color:#1F5F3E;line-height:1.55}
+.gain b{font-weight:600}
+.gain em{display:block;font-style:normal;font-size:11px;color:#4E7A64;margin-top:6px}
+main{padding-top:28px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card + .card{margin-top:20px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--brand);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+input[type=number],select{width:100%;background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:9px 11px;font-family:inherit;font-size:15px}
+input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.hint{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+.mini label{font-size:11.5px;font-weight:500;color:var(--muted)}
+.mini input{padding:7px 9px;font-size:13.5px}
+
+.slider-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px}
+.slider-val{font-size:15px;font-weight:600;color:var(--brand);white-space:nowrap}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:22px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--brand);border:3px solid #fff;box-shadow:0 0 0 1px var(--line);margin-top:-7px;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);border-radius:50%;background:var(--brand);cursor:pointer}
+input[type=range]:disabled::-webkit-slider-thumb{background:var(--muted)}
+input[type=range]:disabled::-moz-range-thumb{background:var(--muted)}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.seg button{background:#fff;border:0;color:var(--body);padding:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--brand);color:#fff}
+.seg3{grid-template-columns:1fr 1fr 1fr}
+
+.derived{display:flex;align-items:baseline;gap:8px;margin-top:12px;padding:10px 12px;background:var(--brand-soft);border-radius:4px;font-size:12.5px;color:var(--brand-dark)}
+.derived b{font-size:16px;font-weight:700}
+
+.checks{margin-top:14px;display:grid;gap:6px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;padding:8px 10px;border-radius:4px;line-height:1.45}
+.c-ok{background:var(--ok-soft);color:var(--ok)}
+.c-bad{background:var(--bad-soft);color:var(--bad)}
+.chk b{font-weight:600}
+
+.verdict{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--brand);border-radius:var(--r);padding:22px 20px}
+.verdict.is-ok{border-top-color:var(--ok)}
+.verdict.is-bad{border-top-color:var(--bad)}
+.verdict-label{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.verdict-main{font-size:40px;font-weight:700;line-height:1.15;margin:4px 0 6px;color:var(--ink);letter-spacing:-1px}
+.verdict-note{font-size:13.5px;color:var(--body);max-width:48ch}
+
+.probes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.probe{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.probe.pick{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-soft)}
+.probe-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.probe-size{font-size:21px;font-weight:700;color:var(--ink)}
+.tag{font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+.t-ok{background:var(--ok-soft);color:var(--ok)}
+.t-warn{background:var(--warn-soft);color:var(--warn)}
+.t-bad{background:var(--bad-soft);color:var(--bad)}
+.probe-state{font-size:12px;font-weight:500;margin-top:2px}
+.bar{height:6px;background:var(--bg);border:1px solid var(--line);border-radius:4px;margin:14px 0 8px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;transition:width .25s ease}
+.bar u{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.5}
+.probe dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.5px;margin-top:10px}
+.probe dt{color:var(--muted)}
+.probe dd{text-align:right;font-weight:600;color:var(--ink)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:20px}
+.stat{background:var(--card);padding:13px 14px}
+.stat b{display:block;font-size:19px;font-weight:700;color:var(--ink)}
+.stat span{font-size:11.5px;color:var(--muted)}
+
+.btn{margin-top:16px;width:100%;background:var(--accent);border:0;color:#fff;padding:12px;border-radius:4px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.btn:hover{background:#D97A12}
+footer{margin-top:26px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);font-size:11.5px;color:var(--muted);line-height:1.65}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>Versand am selben Tag</span>
+    <span>H1Z2Z2-K · TÜV Rheinland geprüft</span>
+    <span>+49 (0) 211 54 555 777</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <div>
+      <img src="https://www.hb-digital.de/bilder/intern/shoplogo/md-hb-digital-logo.svg"
+           alt="hb-digital" style="height:36px;width:auto;display:block">
+      <div style="font-size:11.5px;color:#7B8A96;margin-top:4px">Solar · Photovoltaik · Kabel</div>
+    </div>
+    <div class="headline">Solarkabel-Rechner für Balkonkraftwerke
+      <span>Verlängerungskabel 4 oder 6 mm² mit MC4-kompatiblen Steckern</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+<div class="scope">
+  <b>Kabelauswahl für Balkonkraftwerke mit Parallelanschluss.</b>
+  Wir liefern das Solarkabel — Module und Speicher stammen von anderen Herstellern.
+  Die hinterlegten Geräte- und Modulwerte dienen ausschließlich der Kompatibilitätsprüfung
+  und sind unverbindlich. Für String-Wechselrichter mit Reihenschaltung ab 150 V
+  Eingangsspannung ist dieser Rechner nicht geeignet.
+</div>
+<div class="grid">
+
+  <div>
+    <div class="card">
+      <div class="eyebrow">Speicher oder Wechselrichter</div>
+
+      <div class="field">
+        <label for="geraet">Gerät</label>
+        <select id="geraet">
+          <option value="" selected>— Gerät wählen —</option>
+          <option value="4|1250|36|16|60">Anker SOLIX Solarbank 4 E5000 Pro · 4 Eingänge</option>
+          <option value="4|900|32|16|60">Anker SOLIX Solarbank 3 E2700 Pro · 4 Eingänge</option>
+          <option value="4|600|20|16|60">Anker SOLIX Solarbank 2 E1600 Pro · 4 Eingänge</option>
+          <option value="2|600|20|16|60">Anker SOLIX Solarbank E1600 Plus · 2 Eingänge</option>
+          <option value="custom">Anderes Gerät · Grenzwerte selbst eingeben</option>
+        </select>
+        <div class="hint">Grenzwerte gelten je Eingang. Vor dem Angebot mit dem aktuellen Datenblatt abgleichen.</div>
+      </div>
+
+      <div class="row3 mini">
+        <div><label for="pmax">W je Eingang</label><input type="number" id="pmax" placeholder="—" step="10"></div>
+        <div><label for="amax">A je Eingang</label><input type="number" id="amax" placeholder="—" step="1"></div>
+        <div><label for="eing">Eingänge</label><input type="number" id="eing" placeholder="—" min="1" max="8" step="1"></div>
+      </div>
+      <div class="row mini" style="margin-top:10px">
+        <div><label for="vlo">Eingang ab (V)</label><input type="number" id="vlo" placeholder="—" step="1"></div>
+        <div><label for="vhi">V<sub>oc</sub> max (V)</label><input type="number" id="vhi" placeholder="—" step="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Module an einem Eingang</div>
+
+      <div class="field">
+        <label>Module je Eingang</label>
+        <div class="seg seg3">
+          <button class="mod on" data-n="1">1 direkt</button>
+          <button class="mod" data-n="2">2 per Y</button>
+          <button class="mod" data-n="3">3 per 3-in-1</button>
+        </div>
+        <div class="derived"><span>Anlage gesamt:</span><b id="modGesamt">4 Module</b></div>
+        <div class="hint">Module werden parallel angeschlossen. Reihenschaltung ist bei Solarbank-Geräten nicht zulässig.</div>
+      </div>
+
+      <div class="field">
+        <label for="modul">Modul</label>
+        <select id="modul">
+          <option value="" selected>— Modul wählen —</option>
+          <optgroup label="AIKO Neostar 2S+ · Glas-Glas (Db)">
+            <option value="34.00|13.54|41.06|14.25">AIKO A460-MAH54Db · 460 W</option>
+            <option value="33.90|13.43|40.93|14.15">AIKO A455-MAH54Db · 455 W</option>
+            <option value="33.80|13.32|40.81|14.05">AIKO A450-MAH54Db · 450 W</option>
+            <option value="33.70|13.21|40.71|13.95">AIKO A445-MAH54Db · 445 W</option>
+            <option value="33.60|13.10|40.61|13.85">AIKO A440-MAH54Db · 440 W</option>
+          </optgroup>
+          <optgroup label="AIKO Neostar 2S · Mono-Glas (Mb)">
+            <option value="33.90|13.57|40.89|14.32">AIKO A460-MAH54Mb · 460 W</option>
+            <option value="33.80|13.47|40.79|14.22">AIKO A455-MAH54Mb · 455 W</option>
+            <option value="33.70|13.36|40.69|14.12">AIKO A450-MAH54Mb · 450 W</option>
+            <option value="33.60|13.25|40.59|14.02">AIKO A445-MAH54Mb · 445 W</option>
+            <option value="33.50|13.14|40.49|13.91">AIKO A440-MAH54Mb · 440 W</option>
+          </optgroup>
+          <optgroup label="JA Solar DeepBlue 4.0 Pro">
+            <option value="33.13|13.13|39.11|13.80">JA Solar JAM54D41-435/MB · 435 W</option>
+            <option value="32.64|13.02|38.56|13.70">JA Solar JAM54D41-425/MB · 425 W</option>
+            <option value="32.38|12.97|38.28|13.65">JA Solar JAM54D41-420/MB · 420 W</option>
+          </optgroup>
+          <option value="custom">Eigene Werte eingeben</option>
+        </select>
+        <div class="hint">Werte aus den Herstellerdatenblättern (STC). Bei abweichender Charge unten anpassen.</div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="vmp">U<sub>mpp</sub> (V)</label>
+          <input type="number" id="vmp" placeholder="—" step="0.01">
+        </div>
+        <div class="field">
+          <label for="imp">I<sub>mpp</sub> (A)</label>
+          <input type="number" id="imp" placeholder="—" step="0.01">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="voc">V<sub>oc</sub> (V)</label>
+          <input type="number" id="voc" placeholder="—" step="0.01">
+        </div>
+        <div class="field">
+          <label for="isc">I<sub>sc</sub> (A)</label>
+          <input type="number" id="isc" placeholder="—" step="0.01">
+        </div>
+      </div>
+      <div class="hint">Werte aus dem Datenblatt des Moduls, Spalte STC. In englischen Datenblättern: Vmp, Imp, Voc, Isc.</div>
+
+      <div class="checks" id="checks"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Leitung &amp; Umgebung</div>
+
+      <div class="field">
+        <label for="ausfuehrung">Kabelausführung</label>
+        <select id="ausfuehrung">
+          <option value="1" selected>Verlängerungskabel mit MC4-Steckern</option>
+          <option value="2">Zwei Steckverbindungen in Reihe (Verlängerung gekoppelt)</option>
+          <option value="0">Meterware ohne Stecker, direkte Klemmung</option>
+        </select>
+        <div class="hint" id="hintAus">Steckerbemessung 39 A begrenzt den Strom zusätzlich zum Leiterquerschnitt.</div>
+      </div>
+
+      <div class="field">
+        <div class="slider-head">
+          <label for="laenge" style="margin:0">Einfache Kabellänge</label>
+          <span class="slider-val" id="laengeOut">10 m</span>
+        </div>
+        <input type="range" id="laenge" min="1" max="50" value="10" step="1">
+        <div class="hint">Vom Modul bis zum Eingang des Geräts. Hin- und Rückleiter werden automatisch berücksichtigt.</div>
+      </div>
+
+      <div class="field">
+        <div class="slider-head">
+          <label for="umgebung" style="margin:0">Außentemperatur</label>
+          <span class="slider-val" id="umgebungOut">30 °C</span>
+        </div>
+        <input type="range" id="umgebung" min="-5" max="45" value="30" step="1">
+        <div class="hint">Höchste Lufttemperatur im Sommer. In Deutschland üblich: 30–35 °C.</div>
+      </div>
+
+      <div class="field">
+        <label for="verlegung">Verlegeart</label>
+        <select id="verlegung">
+          <option value="10">Frei hängend, im Schatten</option>
+          <option value="25" selected>Am Balkongeländer, direkte Sonne</option>
+          <option value="20">Im Kabelkanal oder Leerrohr</option>
+          <option value="30">Hinter dem Modul, ohne Luftspalt</option>
+        </select>
+        <div class="derived"><span>Daraus Leitertemperatur:</span><b id="tleiter">55 °C</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Zielwert Verlust</div>
+      <div class="seg">
+        <button id="modeAuto" class="on">Automatisch</button>
+        <button id="modeManual">Manuell</button>
+      </div>
+      <div class="field">
+        <div class="slider-head">
+          <label for="limit" style="margin:0">Angestrebter Verlust</label>
+          <span class="slider-val" id="limitOut">1,0 %</span>
+        </div>
+        <input type="range" id="limit" min="0.5" max="5" value="1" step="0.1" disabled>
+        <div class="hint" id="limitHint">Automatik startet bei 1 % und passt den Zielwert an, bis ein Querschnitt ihn erreicht.</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="verdict" id="verdict">
+      <div class="verdict-label">Empfehlung je Eingang</div>
+      <div class="verdict-main" id="vMain">4 mm²</div>
+      <div class="verdict-note" id="vNote"></div>
+    </div>
+
+    <div class="probes">
+      <div class="probe" id="p4">
+        <div class="probe-head"><span class="probe-size">4 mm²</span><span class="tag" id="g4">—</span></div>
+        <div class="probe-state" id="s4">—</div>
+        <div class="bar"><i id="b4"></i><u id="m4"></u></div>
+        <dl>
+          <dt>Spannungsfall</dt><dd id="d4u">—</dd>
+          <dt>Verlust</dt><dd id="d4p">—</dd>
+          <dt>Belastbarkeit</dt><dd id="d4a">—</dd>
+        </dl>
+      </div>
+      <div class="probe" id="p6">
+        <div class="probe-head"><span class="probe-size">6 mm²</span><span class="tag" id="g6">—</span></div>
+        <div class="probe-state" id="s6">—</div>
+        <div class="bar"><i id="b6"></i><u id="m6"></u></div>
+        <dl>
+          <dt>Spannungsfall</dt><dd id="d6u">—</dd>
+          <dt>Verlust</dt><dd id="d6p">—</dd>
+          <dt>Belastbarkeit</dt><dd id="d6a">—</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="gain" id="gain" style="display:none"></div>
+
+    <div class="cable" id="cable">
+      <div class="cable-head">Ihr Kabel von hb-digital</div>
+      <dl class="cable-spec">
+        <dt>Querschnitt</dt><dd id="cQ">—</dd>
+        <dt>Länge</dt><dd id="cL">—</dd>
+        <dt>Ausführung</dt><dd id="cA">—</dd>
+        <dt>Kabeltyp</dt><dd>H1Z2Z2-K, Kupfer verzinnt</dd>
+        <dt>Isolation</dt><dd>Vernetztes Polyolefin, halogenfrei</dd>
+        <dt>Zulassung</dt><dd>EN 50618, TÜV Rheinland</dd>
+        <dt>Temperaturbereich</dt><dd>−40 °C bis +90 °C, Leiter bis 120 °C</dd>
+        <dt>UV-Beständigkeit</dt><dd>25 Jahre Freibewitterung</dd>
+      </dl>
+      <div class="cable-foot" id="cFoot">—</div>
+
+      <a class="prod" id="cBtn" target="_blank" rel="noopener"
+         href="https://www.hb-digital.de/2x-Solar-Verlaengerungskabel-mit-Stecker-4mm-oder-6mm-Kabel-fuer-PV-Anlagen-Verkabelung-schwarz-rot">
+        <img class="prod-img"
+             src="https://www.hb-digital.de/media/image/product/21335/lg/2x-solar-verlaengerungskabel-6mm-fuer-pv-anlagen-schwarz-und-rot-1m.jpg"
+             alt="Solar Verlängerungskabel mit MC4-kompatiblen Steckern">
+        <div class="prod-body">
+          <div class="prod-name" id="pName">Solar Verlängerungskabel</div>
+          <div class="prod-meta" id="pMeta">Art.-Nr. 6468 · H1Z2Z2-K · schwarz und rot</div>
+          <div class="prod-price"><span id="pPrice">ab 4,90 €</span>
+            <em>ab 1 m · inkl. 0 % MwSt. nach § 12 Abs. 3 UStG · aktueller Preis im Shop</em></div>
+          <div class="prod-cta">Im Shop ansehen →</div>
+        </div>
+      </a>
+
+      <a class="prod" id="vCard" target="_blank" rel="noopener" href="#" style="display:none">
+        <img class="prod-img" id="vImg" src="" alt="Solarstecker Verteiler">
+        <div class="prod-body">
+          <div class="prod-name" id="vName">Solarstecker Verteiler</div>
+          <div class="prod-meta" id="vMeta"></div>
+          <div class="prod-price"><span id="vPrice">Preis im Shop</span>
+            <em>inkl. 0 % MwSt. nach § 12 Abs. 3 UStG</em></div>
+          <div class="prod-cta">Im Shop ansehen →</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="stU">—</b><span>Spannung am Kabel</span></div>
+      <div class="stat"><b id="stI">—</b><span>Strom je Eingang</span></div>
+      <div class="stat"><b id="stPe">—</b><span>Leistung je Eingang</span></div>
+      <div class="stat"><b id="stPg">—</b><span>Anlage gesamt</span></div>
+      <div class="stat"><b id="stT">—</b><span>Leitertemperatur</span></div>
+      <div class="stat"><b id="stW">—</b><span>Verlustleistung</span></div>
+    </div>
+
+    <button class="btn" id="copy">Ergebnis als Text kopieren</button>
+
+    <footer>
+      Berechnung je Eingang: Module parallel, Spannung auf Modulniveau, Ströme addiert.
+      Leitertemperatur = Außentemperatur + Zuschlag je Verlegeart. ρ<sub>Cu</sub> = 0,01786 Ω·mm²/m
+      bei 20 °C, temperaturkorrigiert mit α = 0,00393 1/K. Strombelastbarkeit nach EN 50618
+      für einadrige Solarleitung frei in Luft (4 mm² = 55 A, 6 mm² = 70 A bei 60 °C);
+      MC4-kompatible Stecker sind bis 39 A bemessen. Gerätegrenzwerte sind Richtwerte und
+      können sich je Modellrevision ändern — vor der Bestellung mit dem Datenblatt abgleichen.
+      Das Ergebnis ist eine unverbindliche Orientierung und ersetzt weder die Herstellerangaben
+      noch die Prüfung durch eine Elektrofachkraft. Eine Haftung für die Auslegung im Einzelfall
+      ist ausgeschlossen.
+    </footer>
+  </div>
+
+</div>
+</div>
+</main>
+
+<script>
+(function(){
+  function prodUrl(q, m){
+    return 'https://www.hb-digital.de/2x-Solar-Verlaengerungskabel-' + q
+         + 'mm-fuer-PV-Anlagen-schwarz-und-rot-' + m + 'm';
+  }
+  var PROD_IMG = {
+    4: 'https://www.hb-digital.de/media/image/product/21320/lg/2x-solar-verlaengerungskabel-4mm-fuer-pv-anlagen-schwarz-und-rot-1m.jpg',
+    6: 'https://www.hb-digital.de/media/image/product/21335/lg/2x-solar-verlaengerungskabel-6mm-fuer-pv-anlagen-schwarz-und-rot-1m.jpg'
+  };
+
+  // ---- Preise pflegen: Länge in m -> Preis je Set (2 Kabel), Stand bitte aktuell halten ----
+  var PREIS = {
+    4: { 1: 4.90 },
+    6: { 1: 6.49 }
+  };
+  var PREIS_STAND = 'Stand: bitte im Shop prüfen';
+
+  var RHO20 = 0.01786, ALPHA = 0.00393;
+  var BASE = {4:55, 6:70};
+  var TT = [[20,1.46],[30,1.36],[40,1.25],[50,1.14],[60,1.00],[70,0.86],[80,0.71],[90,0.53]];
+  var STEPS = [1, 1.5, 2, 3];
+  var auto = true, mods = 1;
+
+  function derate(t){
+    if(t <= TT[0][0]) return TT[0][1];
+    if(t >= TT[TT.length-1][0]) return TT[TT.length-1][1];
+    for(var i=0;i<TT.length-1;i++){
+      if(t >= TT[i][0] && t <= TT[i+1][0]){
+        var f = (t - TT[i][0]) / (TT[i+1][0] - TT[i][0]);
+        return TT[i][1] + f * (TT[i+1][1] - TT[i][1]);
+      }
+    }
+    return 1;
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  function num(id, def){ var v = parseFloat($(id).value); return isNaN(v) ? def : v; }
+  function de(n,d){ return n.toFixed(d).replace('.', ','); }
+
+  $('geraet').addEventListener('change', function(){
+    if(this.value === 'custom' || this.value === '') return;
+    var p = this.value.split('|');
+    $('eing').value = p[0]; $('pmax').value = p[1]; $('amax').value = p[2];
+    $('vlo').value = p[3];  $('vhi').value = p[4];
+    calc();
+  });
+  ['pmax','amax','eing','vlo','vhi'].forEach(function(id){
+    $(id).addEventListener('input', function(){ $('geraet').value = 'custom'; });
+  });
+
+  $('modul').addEventListener('change', function(){
+    if(this.value === 'custom' || this.value === '') return;
+    var p = this.value.split('|');
+    $('vmp').value = p[0]; $('imp').value = p[1];
+    $('voc').value = p[2]; $('isc').value = p[3];
+    calc();
+  });
+  ['vmp','imp','voc','isc'].forEach(function(id){
+    $(id).addEventListener('input', function(){ $('modul').value = 'custom'; });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.mod'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.mod'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      mods = parseInt(b.getAttribute('data-n'), 10);
+      calc();
+    });
+  });
+
+  function leer(id){ return $(id).value.trim() === ''; }
+
+  function blankState(){
+    $('vMain').textContent = '—';
+    $('vNote').textContent = 'Bitte oben Gerät und Modul auswählen. Danach erscheint hier die Empfehlung für den Kabelquerschnitt.';
+    $('verdict').className = 'verdict';
+    $('checks').innerHTML = '';
+    [4,6].forEach(function(A){
+      $('g'+A).textContent = '—'; $('g'+A).className = 'tag';
+      $('s'+A).textContent = '—'; $('s'+A).style.color = '';
+      $('b'+A).style.width = '0%';
+      $('d'+A+'u').textContent = '—'; $('d'+A+'p').textContent = '—'; $('d'+A+'a').textContent = '—';
+      $('p'+A).classList.remove('pick');
+    });
+    ['stU','stI','stPe','stPg','stT','stW','cQ','cL','cA'].forEach(function(id){ $(id).textContent = '—'; });
+    $('cFoot').textContent = 'Sobald Gerät und Modul gewählt sind, sehen Sie hier die passende Kabelkonfiguration.';
+    $('modGesamt').textContent = '—';
+    $('pName').textContent  = 'Solar Verlängerungskabel 4 mm² oder 6 mm²';
+    $('pMeta').innerHTML   = 'Art.-Nr. 6468 · Stärke und Länge im Shop wählbar';
+    $('pPrice').textContent = 'Varianten im Shop';
+    $('vCard').style.display = 'none';
+    $('gain').style.display = 'none';
+    $('mpptNote') && ($('mpptNote').textContent = '');
+    window.__summary = 'Bitte zuerst Gerät und Modul auswählen.';
+  }
+
+  function calc(){
+    var vmp = num('vmp',34), imp = num('imp',13.1), voc = num('voc',41), isc = num('isc',13.9);
+    var L   = num('laenge',10);
+    var Ta  = parseFloat($('umgebung').value);
+    var Tl  = Ta + parseFloat($('verlegung').value);
+    var pmax = num('pmax',1250), amax = num('amax',36), eing = Math.max(1, Math.round(num('eing',4)));
+    var vlo = num('vlo',16), vhi = num('vhi',50);
+    var paare = parseInt($('ausfuehrung').value, 10);
+    var MC4 = paare > 0 ? 39 : Infinity;
+    $('hintAus').textContent = paare > 0
+      ? 'Steckerbemessung 39 A begrenzt den Strom zusätzlich zum Leiterquerschnitt. Übergangswiderstand ist mitgerechnet.'
+      : 'Ohne Stecker begrenzt nur der Leiterquerschnitt. Klemmstellen fachgerecht ausführen.';
+
+    $('laengeOut').textContent   = L + ' m';
+    $('umgebungOut').textContent = Ta + ' °C';
+    $('tleiter').textContent     = Math.round(Tl) + ' °C';
+
+    var fehlt = ['vmp','imp','voc','isc','pmax','amax','eing','vlo','vhi'].some(leer);
+    if(fehlt){ blankState(); return; }
+
+    var U = vmp, I = imp * mods, Ia = 1.25 * isc * mods;
+    var Pe = U * I, Pg = Pe * eing;
+    $('modGesamt').textContent = (mods * eing) + ' Module · ' + eing + ' × ' + mods;
+
+    var c = [];
+    function chk(ok, txt){ c.push('<div class="chk ' + (ok ? 'c-ok' : 'c-bad') + '">' + txt + '</div>'); }
+    chk(voc >= vlo && voc <= vhi,
+        '<b>V<sub>oc</sub> ' + de(voc,1) + ' V</b> · zulässig ' + vlo + '–' + vhi + ' V je Modul');
+    chk(I <= amax,
+        '<b>Strom ' + de(I,1) + ' A</b> · Grenze ' + de(amax,0) + ' A je Eingang');
+    chk(Pe <= pmax,
+        '<b>Leistung ' + Math.round(Pe) + ' W</b> · Grenze ' + Math.round(pmax) + ' W je Eingang');
+    if(paare > 0){
+      chk(Ia <= 39, '<b>Auslegungsstrom ' + de(Ia,1) + ' A</b> · MC4-Stecker bis 39 A');
+    }
+    if(mods > 1){
+      chk(Ia <= 50, '<b>Verteiler ' + de(Ia,1) + ' A</b> · Typ-Y bis 35 A, Typ-T bis 50 A');
+    }
+    $('checks').innerHTML = c.join('');
+
+    var rho = RHO20 * (1 + ALPHA * (Tl - 20));
+    var dUc = I * 0.001 * paare * 2;
+    var res = {};
+    [4,6].forEach(function(A){
+      var dU = 2 * L * I * rho / A + dUc;
+      res[A] = { dU:dU, pct:dU/U*100, amp:BASE[A]*derate(Tl), watt:dU*I };
+      res[A].okA = res[A].amp >= Ia && MC4 >= Ia;
+    });
+
+    var lim, autoNote = '';
+    if(auto){
+      lim = STEPS[STEPS.length-1];
+      for(var i=0;i<STEPS.length;i++){
+        var s = STEPS[i];
+        if((res[4].pct <= s && res[4].okA) || (res[6].pct <= s && res[6].okA)){ lim = s; break; }
+      }
+      $('limit').value = lim;
+      autoNote = lim <= 1
+        ? 'Der Zielwert von 1 % wird eingehalten.'
+        : 'Der Zielwert wurde automatisch auf ' + de(lim,1) + ' % gesetzt, weil 1 % hier nicht erreichbar ist.';
+      $('limitHint').textContent = autoNote;
+    } else {
+      lim = parseFloat($('limit').value);
+      $('limitHint').textContent = 'Richtwert, keine Norm: 1 % ist sparsam, 3 % gilt als übliche Obergrenze. Höhere Werte sind zulässig, kosten aber Ertrag.';
+    }
+    $('limitOut').textContent = de(lim,1) + ' %';
+
+    [4,6].forEach(function(A){
+      var r = res[A];
+      r.okL = r.pct <= lim;
+      r.ok  = r.okA;
+      var st = $('s'+A), tag = $('g'+A), bar = $('b'+A), mk = $('m'+A), color;
+
+      if(!r.okA){
+        tag.textContent='Nicht zulässig'; tag.className='tag t-bad';
+        st.textContent = (MC4 < Ia) ? 'Strom über Steckergrenze' : 'Strom über Belastbarkeit';
+        color='var(--bad)';
+      } else if(r.pct > 3){
+        tag.textContent='Hoher Verlust'; tag.className='tag t-warn';
+        st.textContent='Nutzbar, aber ' + de(r.pct,1) + ' % Ertragsverlust';
+        color='var(--warn)';
+      } else if(r.pct > lim){
+        tag.textContent='Nutzbar'; tag.className='tag t-warn';
+        st.textContent='Über Zielwert, technisch unbedenklich';
+        color='var(--warn)';
+      } else {
+        tag.textContent='Empfohlen'; tag.className='tag t-ok';
+        st.textContent='Verlust im Zielbereich';
+        color='var(--ok)';
+      }
+      st.style.color = color;
+
+      var span = Math.max(lim*1.6, r.pct*1.05, 3.2);
+      bar.style.width = Math.min(100, r.pct/span*100).toFixed(1) + '%';
+      bar.style.background = color;
+      mk.style.left = Math.min(100, lim/span*100).toFixed(1) + '%';
+
+      $('d'+A+'u').textContent = de(r.dU,2) + ' V';
+      $('d'+A+'p').textContent = de(r.pct,2) + ' %';
+      $('d'+A+'a').textContent = Math.round(r.amp) + ' A';
+      $('p'+A).classList.remove('pick');
+    });
+
+    var pick, note, cls, key;
+    if(res[4].okA && res[4].pct <= lim){
+      pick='4 mm²'; key=4; cls='is-ok'; $('p4').classList.add('pick');
+      note = 'Bei ' + mods + ' Modul' + (mods>1?'en':'') + ' je Eingang, ' + L + ' m Kabel und '
+           + Math.round(Tl) + ' °C liegt 4 mm² bei ' + de(res[4].pct,2) + ' % Verlust. '
+           + (auto ? autoNote : 'Der günstigere Querschnitt reicht aus.');
+    } else if(res[6].okA){
+      pick='6 mm²'; key=6; cls='is-ok'; $('p6').classList.add('pick');
+      note = '4 mm² käme auf ' + de(res[4].pct,2) + ' % Verlust'
+           + (res[4].okA ? '' : ' und ist beim Strom nicht zulässig')
+           + '. Mit 6 mm² sind es ' + de(res[6].pct,2) + ' %. ';
+      if(res[6].pct > 3){
+        cls='is-ok';
+        note += 'Auf langen Strecken ist das normal — entscheidend ist, dass 6 mm² hier '
+              + 'den Verlust gegenüber 4 mm² um ' + de(res[4].pct - res[6].pct,1)
+              + ' Prozentpunkte senkt.';
+      } else {
+        note += (auto ? autoNote : '');
+      }
+    } else {
+      pick='Nicht zulässig'; key=6; cls='is-bad';
+      note = 'Der Strom von ' + de(Ia,1) + ' A überschreitet die zulässige Belastbarkeit'
+           + (MC4 < Ia ? ' der Steckverbinder' : ' des Kabels')
+           + '. Weniger Module je Eingang anschließen oder auf zwei Leitungen aufteilen.';
+    }
+    $('vMain').textContent = pick;
+    $('vNote').textContent = note;
+    $('verdict').className = 'verdict ' + cls;
+
+    $('stU').textContent  = de(U,1) + ' V';
+    $('stI').textContent  = de(I,1) + ' A';
+    $('stPe').textContent = Math.round(Pe) + ' W';
+    $('stPg').textContent = (Pg >= 1000 ? de(Pg/1000,2) + ' kW' : Math.round(Pg) + ' W');
+    $('stT').textContent  = Math.round(Tl) + ' °C';
+    $('stW').textContent  = Math.round(res[key].watt) + ' W';
+
+    var ERTRAG = 950, STROMPREIS = 0.30;
+    var jahr4 = Pe/1000 * ERTRAG * res[4].pct/100;
+    var jahr6 = Pe/1000 * ERTRAG * res[6].pct/100;
+    var spar  = (jahr4 - jahr6) * STROMPREIS * eing;
+    if(res[6].okA && res[4].okA && res[4].pct > lim){
+      $('gain').style.display = 'block';
+      $('gain').innerHTML = '<b>6 mm² statt 4 mm²</b> spart bei ' + eing + ' Leitungen rund '
+        + de((jahr4 - jahr6) * eing, 0) + ' kWh pro Jahr — etwa ' + de(spar,0)
+        + ' € jährlich bei 30 ct/kWh. Über 20 Jahre Laufzeit sind das rund '
+        + de(spar * 20, 0) + ' €.<em>Schätzung bei 950 kWh/kWp Jahresertrag. '
+        + 'Tatsächliche Werte hängen von Standort, Ausrichtung und Verbrauch ab.</em>';
+    } else {
+      $('gain').style.display = 'none';
+    }
+
+    var LAGER = [1,2,3,5,8,10,12,15,20,25,30,40,50];
+    var lagerL = LAGER.filter(function(x){ return x >= L; })[0] || LAGER[LAGER.length-1];
+    $('cQ').textContent = (pick === 'Nicht zulässig') ? 'erst Aufteilung klären' : pick;
+    $('cL').textContent = lagerL + ' m' + (lagerL !== L ? ' (nächste Lagerlänge)' : '');
+    $('cA').textContent = paare > 0 ? 'Konfektioniert mit MC4-Steckern' : 'Meterware, offene Enden';
+    $('cFoot').textContent = (pick === 'Nicht zulässig')
+      ? 'Mit dieser Konfiguration ist der Strom je Eingang zu hoch. Bitte weniger Module je Eingang anschließen oder auf zwei Leitungen aufteilen.'
+      : 'Benötigt werden ' + eing + ' Leitungen dieser Ausführung — je eine pro belegtem Eingang. Bei '
+        + de(res[key].pct,2) + ' % Verlust kommen rund ' + de(100 - res[key].pct,1)
+        + ' % der Modulleistung am Gerät an.';
+
+    if(pick === 'Nicht zulässig'){
+      $('pName').textContent = 'Solar Verlängerungskabel 4 mm² oder 6 mm²';
+      $('pMeta').innerHTML = 'Art.-Nr. 6468 · Stärke und Länge im Shop wählbar';
+      $('pPrice').textContent = 'Varianten im Shop';
+    } else {
+      var q = (pick === '4 mm²') ? 4 : 6;
+      $('cBtn').href = prodUrl(q, lagerL);
+      document.querySelector('#cBtn .prod-img').src = PROD_IMG[q];
+      $('pName').textContent = '2x ' + lagerL + ' m Solar Verlängerungskabel ' + pick
+                             + ' mit MC4-kompatiblen Steckern';
+      $('pMeta').innerHTML = 'H1Z2Z2-K · 1500 V · IP68 · schwarz und rot';
+      var ab = PREIS[q] && PREIS[q][1];
+      $('pPrice').textContent = ab ? 'ab ' + de(ab,2) + ' €' : 'Preis im Shop';
+    }
+
+    var VT = {
+      Y: { url:'https://www.hb-digital.de/Solarstecker-Verteiler-Typ-Y-Solarkabel-Verbinder-fuer-Solaranlage-Photovoltaik-Verteiler',
+           img:'https://www.hb-digital.de/media/image/product/22499/lg/solarstecker-verteiler-y-typ-3-fach-solarkabel-verbinder-fuer-photovoltaik.jpg',
+           max:35, art:'6647' },
+      T: { url:'https://www.hb-digital.de/Solarstecker-Verteiler-Typ-T-Solarkabel-Verbinder-fuer-Solaranlage-Photovoltaik-Verteiler',
+           img:'https://www.hb-digital.de/media/image/product/22493/lg/solarstecker-verteiler-typ-t-2-fach-solarkabel-verbinder-fuer-photovoltaik.jpg',
+           max:50, art:'6647' }
+    };
+    if(mods > 1){
+      var typ = (Ia <= VT.Y.max) ? 'Y' : 'T';
+      var v = VT[typ];
+      $('vCard').style.display = 'flex';
+      $('vCard').href = v.url;
+      $('vImg').src = v.img;
+      $('vName').textContent = 'Solarstecker Verteiler Typ-' + typ + ' ' + mods
+                             + '-Fach · MC4-kompatibel bis ' + v.max + ' A';
+      $('vMeta').innerHTML = 'Art.-Nr. ' + v.art + ' · im Shop wählen: <b>' + mods + '-Fach</b>'
+                           + (typ === 'T'
+                              ? ' · bei ' + de(Ia,1) + ' A reicht Typ-Y (35 A) nicht aus'
+                              : ' · für ' + de(Ia,1) + ' A ausgelegt');
+    } else {
+      $('vCard').style.display = 'none';
+    }
+
+    var g = $('geraet').options[$('geraet').selectedIndex].text;
+    window.__summary =
+      'hb-digital · Solarkabel für Balkonkraftwerk\n-------------------------------------------\n' +
+      'Gerät: ' + g + '\n' +
+      'Module je Eingang: ' + mods + ' (parallel)\n' +
+      'Module gesamt: ' + (mods * eing) + '\n' +
+      'Eingänge gesamt: ' + eing + '\n' +
+      'Modul: ' + $('modul').options[$('modul').selectedIndex].text + '\n' +
+      'Modulwerte: Umpp ' + de(vmp,1) + ' V / Impp ' + de(imp,1) + ' A / Voc ' + de(voc,1) + ' V / Isc ' + de(isc,1) + ' A\n\n' +
+      'Spannung am Kabel: ' + de(U,1) + ' V\n' +
+      'Strom je Eingang: ' + de(I,1) + ' A (Grenze ' + de(amax,0) + ' A)\n' +
+      'Leistung je Eingang: ' + Math.round(Pe) + ' W (Grenze ' + Math.round(pmax) + ' W)\n' +
+      'Anlage gesamt: ' + Math.round(Pg) + ' W\n' +
+      'Kabellänge: ' + L + ' m\n' +
+      'Ausführung: ' + $('ausfuehrung').options[$('ausfuehrung').selectedIndex].text + '\n' +
+      'Außentemperatur: ' + Ta + ' °C, Leitertemperatur ' + Math.round(Tl) + ' °C\n' +
+      'Zielwert Verlust: ' + de(lim,1) + ' %' + (auto ? ' (automatisch)' : '') + '\n\n' +
+      '4 mm²: ' + de(res[4].pct,2) + ' % / ' + de(res[4].dU,2) + ' V / max. ' + Math.round(res[4].amp) + ' A\n' +
+      '6 mm²: ' + de(res[6].pct,2) + ' % / ' + de(res[6].dU,2) + ' V / max. ' + Math.round(res[6].amp) + ' A\n\n' +
+      'Empfehlung je Eingang: ' + pick + ' (H1Z2Z2-K, MC4-kompatibel)';
+  }
+
+  ['vmp','imp','voc','isc','laenge','umgebung','verlegung','limit','pmax','amax','eing','vlo','vhi','ausfuehrung','modul'].forEach(function(id){
+    $(id).addEventListener('input', calc);
+    $(id).addEventListener('change', calc);
+  });
+
+  function setMode(a){
+    auto = a;
+    $('modeAuto').classList.toggle('on', a);
+    $('modeManual').classList.toggle('on', !a);
+    $('limit').disabled = a;
+    calc();
+  }
+  $('modeAuto').addEventListener('click', function(){ setMode(true); });
+  $('modeManual').addEventListener('click', function(){ setMode(false); });
+
+  $('copy').addEventListener('click', function(){
+    var b = this;
+    navigator.clipboard.writeText(window.__summary).then(function(){
+      b.textContent = 'Kopiert';
+      setTimeout(function(){ b.textContent = 'Ergebnis als Text kopieren'; }, 1600);
+    }, function(){
+      b.textContent = 'Kopieren nicht möglich';
+      setTimeout(function(){ b.textContent = 'Ergebnis als Text kopieren'; }, 1600);
+    });
+  });
+
+  calc();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gewinnrechner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f5f4; color: #1c1917; padding: 24px 16px; line-height: 1.4;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .sub { font-size: 13px; color: #78716c; margin-bottom: 20px; }
+  .card {
+    background: #fff; border: 1px solid #e7e5e4; border-radius: 16px;
+    padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  .lab { display: block; font-size: 11px; color: #78716c; margin-bottom: 4px; }
+  .hint { font-size: 11px; color: #a8a29e; }
+  .mwst-row { display: flex; gap: 8px; align-items: center; }
+  .mwst-input { width: 90px; }
+  .chip { padding: 9px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid #d6d3d1; background: #fff; color: #57534e; cursor: pointer; }
+  .chip.active { background: #1c1917; color: #fff; border-color: #1c1917; }
+
+  /* set header */
+  .set-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .toggle { background: none; border: none; cursor: pointer; font-size: 14px; color: #78716c; width: 22px; height: 22px; border-radius: 6px; }
+  .toggle:hover { background: #f5f5f4; }
+  .set-no { font-size: 13px; font-weight: 700; color: #57534e; background: #f5f5f4; border-radius: 8px; padding: 5px 9px; white-space: nowrap; }
+  .head-name { flex: 1; min-width: 80px; border: 1px solid #e7e5e4; border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 600; outline: none; color: #1c1917; background: #fff; }
+  .head-name:focus { border-color: #059669; }
+  .head-sum { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .head-sum .g { color: #059669; } .head-sum .g.neg { color: #dc2626; }
+  .head-sum .sep { color: #d6d3d1; margin: 0 6px; }
+  .set-del { color: #a8a29e; font-size: 13px; background: none; border: none; cursor: pointer; }
+  .set-del:hover { color: #ef4444; }
+  .set-copy { color: #78716c; font-size: 13px; background: none; border: 1px solid #e7e5e4; border-radius: 8px; padding: 4px 8px; cursor: pointer; white-space: nowrap; }
+  .set-copy:hover { border-color: #059669; color: #059669; }
+  .report-actions { display: flex; gap: 10px; margin-bottom: 16px; }
+  .rbtn { flex: 1; border: 1px solid #d6d3d1; background: #fff; border-radius: 14px; padding: 12px; font-size: 14px; font-weight: 600; color: #44403c; cursor: pointer; }
+  .rbtn:hover { border-color: #059669; color: #059669; }
+  .rbtn.dark { background: #1c1917; color: #fff; border-color: #1c1917; }
+  .rbtn.dark:hover { background: #292524; color: #fff; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+  .modal { background: #fff; border-radius: 16px; padding: 20px; max-width: 580px; width: 100%; max-height: 90vh; overflow: auto; }
+  .modal h2 { font-size: 18px; margin-bottom: 8px; }
+  .modal .mhint { font-size: 12px; color: #78716c; margin-bottom: 12px; line-height: 1.7; }
+  .modal .mhint code { background: #f5f5f4; padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+  .modal textarea { width: 100%; height: 150px; border: 1px solid #d6d3d1; border-radius: 10px; padding: 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; outline: none; resize: vertical; }
+  .modal textarea:focus { border-color: #059669; }
+  .modal-file { margin: 12px 0; font-size: 13px; color: #57534e; }
+  .tmpl-link { color: #059669; cursor: pointer; text-decoration: underline; font-size: 12px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+  .modal-actions button { padding: 9px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid #d6d3d1; background: #fff; color: #44403c; }
+  .modal-actions .primary { background: #059669; color: #fff; border-color: #059669; }
+  .modal-actions .ghost { background: #1c1917; color: #fff; border-color: #1c1917; }
+
+  /* body two columns */
+  .set-body { display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px; margin-top: 14px; }
+  .set-body.collapsed { display: none; }
+
+  .article { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .article-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .nr-input { width: 96px; border: 1px solid #d6d3d1; border-radius: 8px; padding: 6px 8px; font-size: 12px; outline: none; color: #57534e; background: #fff; }
+  .nr-input:focus { border-color: #059669; }
+  .name-input { flex: 1; border: none; background: transparent; font-size: 14px; font-weight: 500; outline: none; min-width: 0; color: #1c1917; }
+  .del { background: none; border: none; cursor: pointer; color: #a8a29e; font-size: 16px; padding: 4px; line-height: 1; }
+  .del:hover { color: #ef4444; }
+  .fields { display: flex; gap: 8px; }
+  .field { flex: 1; } .field.qty { flex: 0 0 76px; }
+  input.num, input.big {
+    width: 100%; border: 1px solid #d6d3d1; border-radius: 8px;
+    padding: 9px 12px; font-size: 14px; outline: none; background: #fff; color: #1c1917;
+  }
+  input.big { font-size: 16px; font-weight: 500; padding: 11px 12px; }
+  input.num:focus, input.big:focus { border-color: #059669; }
+  input:disabled { background: #f5f5f4; color: #a8a29e; }
+  .add-art {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+    border: 1px dashed #d6d3d1; background: none; border-radius: 10px; padding: 8px;
+    font-size: 13px; font-weight: 500; color: #57534e; cursor: pointer; margin-bottom: 12px;
+  }
+  .add-art:hover { border-color: #34d399; color: #059669; }
+  .ship-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px; }
+  .ship-free { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #57534e; padding-bottom: 9px; white-space: nowrap; cursor: pointer; }
+  .ship-free input { width: 16px; height: 16px; accent-color: #059669; }
+
+  /* result panel */
+  .panel { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 12px; padding: 14px; align-self: start; }
+  .panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #a8a29e; margin-bottom: 10px; }
+  .line { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+  .line .lbl { color: #57534e; } .line .lbl.muted, .line .v.muted { color: #a8a29e; }
+  .line .v { font-weight: 500; }
+  .line.strong { border-top: 1px solid #e7e5e4; padding-top: 8px; font-weight: 600; }
+  .line.strong .lbl { color: #1c1917; font-weight: 600; }
+  .set-result { display: flex; gap: 8px; margin-top: 12px; }
+  .set-box { flex: 1; border-radius: 10px; padding: 10px; color: #fff; background: #059669; text-align: center; }
+  .set-box.neg { background: #dc2626; }
+  .set-box.gray { background: #57534e; }
+  .set-box .k { font-size: 11px; opacity: .9; } .set-box .p { font-size: 17px; font-weight: 700; }
+
+  .add-set {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+    border: 1px dashed #a8a29e; background: #fff; border-radius: 14px; padding: 12px;
+    font-size: 15px; font-weight: 600; color: #44403c; cursor: pointer; margin-bottom: 16px;
+  }
+  .add-set:hover { border-color: #059669; color: #059669; }
+
+  .total { border-radius: 16px; padding: 20px; color: #fff; background: #1c1917; box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+  .total h2 { color: #fff; font-size: 15px; margin-bottom: 14px; opacity: .85; }
+  .total-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .total .colhead { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; opacity: .6; margin-bottom: 10px; }
+  .total .row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; opacity: .92; }
+  .total .row.big { font-size: 15px; font-weight: 700; opacity: 1; border-top: 1px solid rgba(255,255,255,.15); padding-top: 8px; margin-top: 4px; }
+  .total .row.big .neg { color: #fca5a5; }
+  .foot { font-size: 11px; color: #a8a29e; margin-top: 16px; line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .set-body { grid-template-columns: 1fr; }
+    .total-cols { grid-template-columns: 1fr; gap: 20px; }
+    .head-sum { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Gewinnrechner</h1>
+  <div class="sub">Gewinn pro Artikel · netto → brutto</div>
+
+  <div class="card">
+    <span class="lab">Mehrwertsteuer (gilt für alle Artikel)</span>
+    <div class="mwst-row" style="margin-bottom:14px">
+      <input class="num mwst-input" id="mwst" inputmode="decimal" value="19" oninput="calc()">
+      <span style="color:#78716c">%</span>
+      <button class="chip" data-r="19" onclick="setMwst('19')">19%</button>
+      <button class="chip" data-r="0" onclick="setMwst('0')">0%</button>
+    </div>
+    <span class="lab">Werbekosten (% vom Verkauf netto)</span>
+    <div class="mwst-row">
+      <input class="num mwst-input" id="werbung" inputmode="decimal" value="24" oninput="calc()">
+      <span style="color:#78716c">%</span>
+      <span class="hint">wird als Kosten zum Einkauf gerechnet</span>
+    </div>
+  </div>
+
+  <div id="sets"></div>
+
+  <button class="add-set" onclick="addSet()">＋ Artikel hinzufügen</button>
+
+  <div class="report-actions">
+    <button class="rbtn" onclick="openImport()">⬆ Importieren</button>
+    <button class="rbtn dark" onclick="openReport()">📄 Bericht</button>
+    <button class="rbtn" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+
+  <div class="total">
+    <h2>Gesamtübersicht</h2>
+    <div class="total-cols">
+      <div>
+        <div class="colhead">Summe (alle Artikel)</div>
+        <div class="row"><span>Einkauf + Versand</span><span id="tEinkauf">0,00 €</span></div>
+        <div class="row"><span>Werbekosten</span><span id="tWerbung">0,00 €</span></div>
+        <div class="row"><span>Verkauf netto</span><span id="tVerkauf">0,00 €</span></div>
+        <div class="row big"><span>Gewinn gesamt</span><span id="tGewinn">0,00 €</span></div>
+      </div>
+      <div>
+        <div class="colhead">Ø Durchschnitt je Artikel</div>
+        <div class="row"><span>Gewinn Ø</span><span id="aGewinn">0,00 €</span></div>
+        <div class="row"><span>Aufschlag Ø</span><span id="aMarkup">0,0 %</span></div>
+        <div class="row"><span>Marge Ø</span><span id="aMargin">0,0 %</span></div>
+        <div class="row big"><span>Artikel</span><span id="aCount">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Kosten = Einkauf + Versand + Werbung. Werbung = % vom Verkauf netto. Gewinn = Verkauf netto − Kosten.
+    Aufschlag = Gewinn ÷ Kosten. Marge = Gewinn ÷ Verkauf netto. Ø = arithmetischer Durchschnitt über alle Artikel.
+    Die MwSt wird aus dem Gewinn herausgerechnet — verglichen wird netto mit netto.
+  </p>
+</div>
+
+<div class="modal-overlay" id="importModal" style="display:none">
+  <div class="modal">
+    <h2>Artikel importieren</h2>
+    <p class="mhint">
+      Aus Excel kopieren und unten einfügen, oder eine <code>.csv</code>-Datei laden. Erste Zeile = Überschriften.
+      Erkannt werden: <code>Art.-Nr.</code>, <code>Bezeichnung</code>, <code>EK netto</code>, <code>Menge</code>, <code>Versand</code>, <code>VK brutto</code>.
+      Optionale Spalte <code>Gruppe</code> fasst mehrere Zeilen zu einem Artikel mit mehreren Positionen zusammen.
+      <span class="tmpl-link" onclick="importTemplate()">Vorlage herunterladen</span>
+    </p>
+    <textarea id="importText" placeholder="Gruppe;Art.-Nr.;Bezeichnung;EK netto;Menge;Versand;VK brutto&#10;Set A;1001;Produkt X;10,00;1;3,50;59,90&#10;Set A;1002;Zubehör Y;5,00;2;;"></textarea>
+    <div class="modal-file">Oder Datei: <input type="file" id="importFile" accept=".csv,.txt" onchange="loadImportFile(event)"></div>
+    <div class="modal-actions">
+      <button onclick="closeImport()">Abbrechen</button>
+      <button class="primary" onclick="doImport(false)">Anhängen</button>
+      <button class="ghost" onclick="doImport(true)">Alles ersetzen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let uid = 1;
+  let sets = [];
+
+  function newArticle(n) { return { id: uid++, nr: "", name: "Position " + n, netto: "", qty: "1" }; }
+  function newSet() {
+    return { id: uid++, nr: "", name: "Artikel " + (sets.length + 1), bez: "", collapsed: false,
+             articles: [ newArticle(1) ], shipping: "", shipFree: false, brutto: "" };
+  }
+
+  const num = (v) => { const n = parseFloat(String(v).replace(",", ".")); return isNaN(n) ? 0 : n; };
+  const eur = (n) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(isFinite(n) ? n : 0);
+  const pct = (n) => new Intl.NumberFormat("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(isFinite(n) ? n : 0);
+  const esc = (s) => String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+  const findSet = (id) => sets.find(s => s.id === id);
+
+  function addSet() { sets.push(newSet()); build(); }
+  function removeSet(id) { if (sets.length > 1) { sets = sets.filter(s => s.id !== id); build(); } }
+  function toggleSet(id) { const s = findSet(id); s.collapsed = !s.collapsed; build(); }
+  function addArticle(setId) { const s = findSet(setId); s.articles.push(newArticle(s.articles.length + 1)); build(); }
+  function removeArticle(setId, artId) { const s = findSet(setId); if (s.articles.length > 1) { s.articles = s.articles.filter(a => a.id !== artId); build(); } }
+  function updSet(id, field, val) { findSet(id)[field] = val; calc(); }
+  function updArt(setId, artId, field, val) { findSet(setId).articles.find(x => x.id === artId)[field] = val; calc(); }
+  function toggleFree(id, checked) { findSet(id).shipFree = checked; build(); }
+  function setMwst(r) { document.getElementById("mwst").value = r; calc(); }
+
+  function build() {
+    const c = document.getElementById("sets");
+    sets.forEach((s, i) => s.name = "Artikel " + (i + 1));
+    c.innerHTML = sets.map(s => `
+      <div class="card">
+        <div class="set-head">
+          <button class="toggle" onclick="toggleSet(${s.id})" title="Ein-/ausklappen">${s.collapsed ? "▸" : "▾"}</button>
+          <span class="set-no">${esc(s.name)}</span>
+          <input class="nr-input" value="${esc(s.nr)}" oninput="updSet(${s.id},'nr',this.value)" placeholder="Art.-Nr.">
+          <input class="head-name" value="${esc(s.bez)}" oninput="updSet(${s.id},'bez',this.value)" placeholder="Bezeichnung">
+          <span class="head-sum">Gewinn <span class="g" id="hg-${s.id}">0,00 €</span><span class="sep">·</span>Marge <span id="hm-${s.id}">0,0 %</span></span>
+          <button class="set-copy" onclick="duplicateSet(${s.id})" title="Artikel duplizieren">⧉ Kopie</button>
+          <button class="set-del" onclick="removeSet(${s.id})" title="Artikel löschen">✕ Artikel</button>
+        </div>
+
+        <div class="set-body ${s.collapsed ? "collapsed" : ""}">
+          <div class="inputs">
+            ${s.articles.map(a => `
+              <div class="article">
+                <div class="article-top">
+                  <input class="nr-input" value="${esc(a.nr)}" oninput="updArt(${s.id},${a.id},'nr',this.value)" placeholder="Art.-Nr.">
+                  <input class="name-input" value="${esc(a.name)}" oninput="updArt(${s.id},${a.id},'name',this.value)" placeholder="Bezeichnung">
+                  <button class="del" onclick="removeArticle(${s.id},${a.id})" title="Position entfernen">🗑</button>
+                </div>
+                <div class="fields">
+                  <label class="field"><span class="lab">EK netto, €</span>
+                    <input class="num" inputmode="decimal" value="${esc(a.netto)}" oninput="updArt(${s.id},${a.id},'netto',this.value)" placeholder="0,00"></label>
+                  <label class="field qty"><span class="lab">Menge</span>
+                    <input class="num" inputmode="numeric" value="${esc(a.qty)}" oninput="updArt(${s.id},${a.id},'qty',this.value)" placeholder="1"></label>
+                </div>
+              </div>`).join("")}
+            <button class="add-art" onclick="addArticle(${s.id})">＋ Position hinzufügen</button>
+
+            <div class="ship-row">
+              <label class="field"><span class="lab">Versandkosten (EK), €</span>
+                <input class="num" inputmode="decimal" value="${esc(s.shipping)}" ${s.shipFree ? "disabled" : ""} oninput="updSet(${s.id},'shipping',this.value)" placeholder="0,00"></label>
+              <label class="ship-free">
+                <input type="checkbox" ${s.shipFree ? "checked" : ""} onchange="toggleFree(${s.id}, this.checked)"> kostenlos
+              </label>
+            </div>
+
+            <label style="display:block"><span class="lab">Verkaufspreis brutto, €</span>
+              <input class="big" inputmode="decimal" value="${esc(s.brutto)}" oninput="updSet(${s.id},'brutto',this.value)" placeholder="0,00"></label>
+          </div>
+
+          <div class="panel">
+            <h3>Ergebnis</h3>
+            <div class="line"><span class="lbl">Einkauf + Versand</span><span class="v" id="ek-${s.id}">0,00 €</span></div>
+            <div class="line"><span class="lbl" id="wlbl-${s.id}">Werbung</span><span class="v" id="w-${s.id}">0,00 €</span></div>
+            <div class="line strong"><span class="lbl">Kosten gesamt</span><span class="v" id="kn-${s.id}">0,00 €</span></div>
+            <div class="line"><span class="lbl muted">Verkauf netto</span><span class="v muted" id="vk-${s.id}">0,00 €</span></div>
+            <div class="set-result">
+              <div class="set-box" id="gbox-${s.id}"><div class="k">Gewinn</div><div class="p" id="g-${s.id}">0,00 €</div></div>
+              <div class="set-box" id="mbox-${s.id}"><div class="k">Aufschlag</div><div class="p" id="m-${s.id}">0,0 %</div></div>
+              <div class="set-box gray"><div class="k">Marge</div><div class="p" id="mg-${s.id}">0,0 %</div></div>
+            </div>
+          </div>
+        </div>
+      </div>`).join("");
+    calc();
+  }
+
+  function metrics(s, rate, adRate) {
+    const artSum = s.articles.reduce((sum, a) => sum + num(a.netto) * (num(a.qty) || 0), 0);
+    const ship = s.shipFree ? 0 : num(s.shipping);
+    const einkauf = artSum + ship;
+    const brutto = num(s.brutto);
+    const verkauf = brutto / (1 + rate);
+    const werbung = verkauf * adRate;
+    const kosten = einkauf + werbung;
+    const gewinn = verkauf - kosten;
+    const markup = kosten > 0 ? (gewinn / kosten) * 100 : 0;
+    const margin = verkauf > 0 ? (gewinn / verkauf) * 100 : 0;
+    return { einkauf, brutto, verkauf, werbung, kosten, gewinn, markup, margin };
+  }
+
+  function calc() {
+    const rate = num(document.getElementById("mwst").value) / 100;
+    const adRate = num(document.getElementById("werbung").value) / 100;
+    const adLabel = "Werbung (" + pct(adRate * 100) + " %)";
+    let tEinkauf = 0, tWerbung = 0, tVerkauf = 0, tGewinn = 0;
+    let sumMarkup = 0, sumMargin = 0;
+    const n = sets.length;
+
+    sets.forEach(s => {
+      const m = metrics(s, rate, adRate);
+      tEinkauf += m.einkauf; tWerbung += m.werbung; tVerkauf += m.verkauf; tGewinn += m.gewinn;
+      sumMarkup += m.markup; sumMargin += m.margin;
+
+      set("wlbl-" + s.id, adLabel);
+      set("ek-" + s.id, eur(m.einkauf)); set("w-" + s.id, eur(m.werbung));
+      set("kn-" + s.id, eur(m.kosten)); set("vk-" + s.id, eur(m.verkauf));
+      set("g-" + s.id, eur(m.gewinn)); set("m-" + s.id, pct(m.markup) + " %"); set("mg-" + s.id, pct(m.margin) + " %");
+      set("hg-" + s.id, eur(m.gewinn)); set("hm-" + s.id, pct(m.margin) + " %");
+      neg("gbox-" + s.id, m.gewinn < 0); neg("mbox-" + s.id, m.gewinn < 0);
+      const hg = document.getElementById("hg-" + s.id); if (hg) hg.classList.toggle("neg", m.gewinn < 0);
+    });
+
+    set("tEinkauf", eur(tEinkauf)); set("tWerbung", eur(tWerbung));
+    set("tVerkauf", eur(tVerkauf)); set("tGewinn", eur(tGewinn));
+    document.getElementById("tGewinn").classList.toggle("neg", tGewinn < 0);
+
+    set("aGewinn", eur(n ? tGewinn / n : 0));
+    set("aMarkup", pct(n ? sumMarkup / n : 0) + " %");
+    set("aMargin", pct(n ? sumMargin / n : 0) + " %");
+    set("aCount", String(n));
+
+    document.querySelectorAll(".chip").forEach(ch => ch.classList.toggle("active", ch.dataset.r === String(num(document.getElementById("mwst").value))));
+  }
+
+  function duplicateSet(id) {
+    const idx = sets.findIndex(s => s.id === id);
+    const s = sets[idx];
+    const copy = {
+      id: uid++, nr: s.nr, name: s.name, bez: s.bez, collapsed: false,
+      articles: s.articles.map(a => ({ id: uid++, nr: a.nr, name: a.name, netto: a.netto, qty: a.qty })),
+      shipping: s.shipping, shipFree: s.shipFree, brutto: s.brutto
+    };
+    sets.splice(idx + 1, 0, copy);
+    build();
+  }
+
+  function reportRows() {
+    const rate = num(document.getElementById("mwst").value) / 100;
+    const adRate = num(document.getElementById("werbung").value) / 100;
+    const rows = [];
+    let t = { einkauf: 0, werbung: 0, kosten: 0, brutto: 0, verkauf: 0, gewinn: 0, markup: 0, margin: 0 };
+    sets.forEach(s => {
+      const m = metrics(s, rate, adRate);
+      const pos = s.articles
+        .map(a => (a.name || "—") + (a.nr ? " [" + a.nr + "]" : "") + " ×" + (num(a.qty) || 0))
+        .join(", ");
+      rows.push({ nr: s.nr, name: s.bez ? (s.name + " – " + s.bez) : s.name, pos, ...m });
+      ["einkauf", "werbung", "kosten", "brutto", "verkauf", "gewinn", "markup", "margin"].forEach(k => t[k] += m[k]);
+    });
+    return { rows, t, n: sets.length || 1,
+             mwst: num(document.getElementById("mwst").value),
+             ad: num(document.getElementById("werbung").value) };
+  }
+
+  function exportCSV() {
+    const { rows, t, n, mwst, ad } = reportRows();
+    const sep = ";";
+    const q = (v) => '"' + String(v).replace(/"/g, '""') + '"';
+    const n2 = (v) => v.toFixed(2).replace(".", ",");
+    const n1 = (v) => v.toFixed(1).replace(".", ",");
+    const head = ["Art.-Nr.", "Bezeichnung", "Positionen", "EK+Versand netto", "Werbung", "Kosten gesamt", "VK brutto", "VK netto", "Gewinn", "Aufschlag %", "Marge %"];
+    const lines = [];
+    lines.push(q("Gewinnbericht") + sep + q("Stand " + new Date().toLocaleDateString("de-DE")));
+    lines.push(q("MwSt " + pct(mwst) + " %") + sep + q("Werbung " + pct(ad) + " %"));
+    lines.push("");
+    lines.push(head.map(q).join(sep));
+    rows.forEach(r => lines.push([q(r.nr), q(r.name), q(r.pos), n2(r.einkauf), n2(r.werbung), n2(r.kosten), n2(r.brutto), n2(r.verkauf), n2(r.gewinn), n1(r.markup), n1(r.margin)].join(sep)));
+    lines.push("");
+    lines.push([q("SUMME"), "", "", n2(t.einkauf), n2(t.werbung), n2(t.kosten), n2(t.brutto), n2(t.verkauf), n2(t.gewinn), "", ""].join(sep));
+    lines.push([q("Ø je Artikel"), "", "", n2(t.einkauf / n), n2(t.werbung / n), n2(t.kosten / n), n2(t.brutto / n), n2(t.verkauf / n), n2(t.gewinn / n), n1(t.markup / n), n1(t.margin / n)].join(sep));
+    const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Gewinnbericht_" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  function openReport() {
+    const { rows, t, n, mwst, ad } = reportRows();
+    const c = (n2) => eur(n2);
+    const p = (v) => pct(v) + " %";
+    const tr = rows.map(r => `<tr>
+      <td>${esc(r.nr || "")}</td><td class="l">${esc(r.name)}</td><td class="l poslist">${esc(r.pos)}</td>
+      <td>${c(r.einkauf)}</td><td>${c(r.werbung)}</td><td>${c(r.kosten)}</td>
+      <td>${c(r.brutto)}</td><td>${c(r.verkauf)}</td>
+      <td class="${r.gewinn < 0 ? "gneg" : "gpos"}">${c(r.gewinn)}</td><td>${p(r.markup)}</td><td>${p(r.margin)}</td></tr>`).join("");
+    const html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Gewinnbericht</title>
+      <style>
+        body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1917;padding:32px;max-width:1100px;margin:0 auto;}
+        h1{font-size:22px;margin-bottom:4px;} .meta{color:#78716c;font-size:13px;margin-bottom:20px;}
+        table{width:100%;border-collapse:collapse;font-size:13px;}
+        th,td{padding:8px 10px;text-align:right;border-bottom:1px solid #e7e5e4;white-space:nowrap;}
+        th{background:#f5f5f4;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:#57534e;}
+        td.l,th.l{text-align:left;} td.poslist{white-space:normal;color:#78716c;font-size:12px;max-width:280px;}
+        tr.sum td{border-top:2px solid #1c1917;font-weight:700;} tr.avg td{font-weight:600;color:#44403c;}
+        td.gpos{color:#059669;} td.gneg{color:#dc2626;}
+        .print{margin:20px 0;padding:10px 18px;border:none;border-radius:8px;background:#1c1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;}
+        @media print{.print{display:none;}}
+      </style></head><body>
+      <h1>Gewinnbericht</h1>
+      <div class="meta">Stand ${new Date().toLocaleDateString("de-DE")} · MwSt ${pct(mwst)} % · Werbung ${pct(ad)} % · ${sets.length} Artikel</div>
+      <button class="print" onclick="window.print()">🖨 Drucken / als PDF speichern</button>
+      <table>
+        <thead><tr>
+          <th class="l">Art.-Nr.</th><th class="l">Bezeichnung</th><th class="l">Positionen</th>
+          <th>EK+Versand</th><th>Werbung</th><th>Kosten</th><th>VK brutto</th><th>VK netto</th><th>Gewinn</th><th>Aufschlag</th><th>Marge</th>
+        </tr></thead><tbody>
+        ${tr}
+        <tr class="sum"><td class="l">SUMME</td><td></td><td></td><td>${c(t.einkauf)}</td><td>${c(t.werbung)}</td><td>${c(t.kosten)}</td><td>${c(t.brutto)}</td><td>${c(t.verkauf)}</td><td>${c(t.gewinn)}</td><td></td><td></td></tr>
+        <tr class="avg"><td class="l">Ø je Artikel</td><td></td><td></td><td>${c(t.einkauf/n)}</td><td>${c(t.werbung/n)}</td><td>${c(t.kosten/n)}</td><td>${c(t.brutto/n)}</td><td>${c(t.verkauf/n)}</td><td>${c(t.gewinn/n)}</td><td>${p(t.markup/n)}</td><td>${p(t.margin/n)}</td></tr>
+        </tbody>
+      </table></body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
+    else { alert("Bitte Pop-ups für diese Seite erlauben, um den Bericht zu öffnen."); }
+  }
+
+  function openImport() { document.getElementById("importModal").style.display = "flex"; }
+  function closeImport() { document.getElementById("importModal").style.display = "none"; }
+  function loadImportFile(ev) {
+    const f = ev.target.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById("importText").value = reader.result; };
+    reader.readAsText(f, "utf-8");
+  }
+
+  function cleanNum(v) {
+    if (!v) return "";
+    let s = String(v).replace(/[^0-9.,\-]/g, "");
+    if (s.includes(".") && s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+    else if (s.includes(",")) s = s.replace(",", ".");
+    const n = parseFloat(s);
+    return isNaN(n) ? "" : String(n);
+  }
+
+  function parseImport(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+    if (!lines.length) return [];
+    let delim = "\t", best = -1;
+    ["\t", ";", ","].forEach(d => { const c = lines[0].split(d).length; if (c > best) { best = c; delim = d; } });
+    const parseLine = (line) => {
+      const out = []; let cur = "", q = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+        else { if (ch === '"') q = true; else if (ch === delim) { out.push(cur); cur = ""; } else cur += ch; }
+      }
+      out.push(cur); return out.map(s => s.trim());
+    };
+    const norm = (s) => s.toLowerCase().replace(/ä/g,"a").replace(/ö/g,"o").replace(/ü/g,"u").replace(/ß/g,"ss").replace(/[\s.\-_]/g, "");
+    const header = parseLine(lines[0]).map(norm);
+    const idx = (names) => { for (const n of names) { const i = header.indexOf(n); if (i >= 0) return i; } return -1; };
+    const iNr = idx(["artnr","nr","artikelnummer","artikelnr","nummer","sku"]);
+    const iBez = idx(["bezeichnung","name","titel","artikel","produkt","beschreibung"]);
+    const iEk = idx(["ek","eknetto","einkauf","einkaufspreis","preis","netto","ekpreis"]);
+    const iMenge = idx(["menge","anzahl","qty","stk","stuck","stuckzahl","stück"]);
+    const iVersand = idx(["versand","versandkosten","shipping","porto","fracht"]);
+    const iVk = idx(["vk","vkbrutto","verkauf","verkaufspreis","brutto","vkpreis","preisbrutto"]);
+    const iGrp = idx(["gruppe","set","bundle","group","paket"]);
+
+    const rows = [];
+    for (let r = 1; r < lines.length; r++) {
+      const c = parseLine(lines[r]);
+      const g = (i) => (i >= 0 && i < c.length ? c[i] : "");
+      rows.push({ nr: g(iNr), bez: g(iBez), ek: cleanNum(g(iEk)), menge: cleanNum(g(iMenge)),
+                  versand: cleanNum(g(iVersand)), vk: cleanNum(g(iVk)), grp: g(iGrp) });
+    }
+
+    const makeSet = (head, list) => ({
+      id: uid++, nr: head.nr || "", bez: head.bez || "", name: "", collapsed: false,
+      articles: list.map((r, i) => ({ id: uid++, nr: r.nr || "", name: r.bez || ("Position " + (i + 1)), netto: r.ek || "", qty: r.menge || "1" })),
+      shipping: head.versand || "", shipFree: false, brutto: head.vk || ""
+    });
+
+    const result = [];
+    const hasGrp = iGrp >= 0 && rows.some(r => r.grp);
+    if (hasGrp) {
+      const map = new Map();
+      rows.forEach((r, i) => { const key = r.grp || ("__" + i); if (!map.has(key)) map.set(key, []); map.get(key).push(r); });
+      map.forEach(list => { const head = list.find(r => r.vk || r.bez || r.nr) || list[0]; result.push(makeSet(head, list)); });
+    } else {
+      rows.forEach(r => result.push(makeSet(r, [r])));
+    }
+    return result;
+  }
+
+  function doImport(replace) {
+    const text = document.getElementById("importText").value;
+    let parsed = [];
+    try { parsed = parseImport(text); }
+    catch (e) { alert("Fehler beim Lesen: " + e.message); return; }
+    if (!parsed.length) { alert("Keine Daten gefunden. Prüfe die Kopfzeile (z. B. Bezeichnung, EK netto, Menge, VK brutto)."); return; }
+    sets = replace ? parsed : sets.concat(parsed);
+    document.getElementById("importText").value = "";
+    document.getElementById("importFile").value = "";
+    closeImport();
+    build();
+  }
+
+  function importTemplate() {
+    const csv = "\uFEFF" + [
+      "Gruppe;Art.-Nr.;Bezeichnung;EK netto;Menge;Versand;VK brutto",
+      "Set A;1001;Produkt X;10,00;1;3,50;59,90",
+      "Set A;1002;Zubehör Y;5,00;2;;",
+      "Set B;2001;Produkt Z;20,00;1;0;99,00"
+    ].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Import-Vorlage.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  function set(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
+  function neg(id, isNeg) { const el = document.getElementById(id); if (el) el.classList.toggle("neg", isNeg); }
+
+  sets.push(newSet());
+  build();
+</script>
+</body>
+</html>
